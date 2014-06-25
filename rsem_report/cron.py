@@ -4,6 +4,12 @@ import json
 import kronos
 import paramiko
 import yaml
+import logging
+logging.basicConfig(
+    filename=os.path.expanduser('~/cron_rsem_report.log'),
+    format='%(asctime)s %(message)s',
+    datefmt='%m/%d/%Y %I:%M:%S %p',
+    level=logging.DEBUG)
 
 from models import GSE
 
@@ -37,7 +43,6 @@ def fetch_report_data():
     C = config['fetch_report_data']
     res = sshexec(C['host'], C['username'], C['cmd'])
     data = json.loads(res[0])
-    print data.keys()
     GSE_objs = []
     for gse in sorted(data.keys()):
         D = data[gse]
@@ -55,11 +60,12 @@ def fetch_report_data():
             gse_obj = GSE.objects.get(name=gse)
             if not gse_obj.passed:
                 # need to do some update
-                print 'Updating'
+                logging.info('Updating {0}'.format(gse))
                 for key, value in kwargs.iteritems():
                     setattr(gse_obj, key, value)
                 gse_obj.save()
         except GSE.DoesNotExist:
+            logging.info('Creating {0}'.format(gse))
             gse_obj = GSE(**kwargs)
             GSE_objs.append(gse_obj)
     GSE.objects.bulk_create(GSE_objs)
