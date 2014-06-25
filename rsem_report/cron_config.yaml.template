@@ -1,0 +1,5 @@
+fetch_report_data:
+  freq: "*/1 * * * *"
+  host: "genesis.bcgsc.ca"
+  username: "zxue"
+  cmd: "/home/zxue/zx_local/bin/python /extscratch/btl/zxue/rsem_pipeline/rsem_pipeline2/tools/gen_progress_report.py -d /extscratch/btl/zxue/rsem_pipeline/ --json"

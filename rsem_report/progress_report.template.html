@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <title> GSE Analysis Progress Report</title>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+  </head>
+<body>
+<h1>Latest Report </h1>
+<table class="table table-hover">
+  <tr>
+    <th>ID</th>
+    <th>GSE</th>
+    <th># of passed GSMs</th>
+    <th># of not passed GSMs</th>
+    <th>GSE location</th>
+    <th>Passed GSMs</th>
+    <th>Not passed GSMs</th>
+  </tr>
+
+  {% for gse in gse_report_items %}
+    {% if gse.passed %}
+      <tr class="success">
+    {% else %}
+      <tr class="danger">
+    {% endif %}
+      <td>{{loop.index}}</td>
+      <td>{{gse.name}}</td>
+      <td>{{gse.num_passed_gsms}}</td>
+      <td>{{gse.num_not_passed_gsms}}</td>
+      <td>{{gse.path|join(', ')}}</td>
+      <td>{{gse.passed_gsms|join(', ')}}</td>
+      <td>{{gse.not_passed_gsms|join(', ')}}</td>
+    </tr>
+  {% endfor %}
+</table>
+
+</body>
+</html>
+
+

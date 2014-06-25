@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'rsem_report',
-    'django_rq',
+    'kronos',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -70,7 +70,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Vancouver'
 
 USE_I18N = True
 
@@ -84,21 +84,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
 
-# RQ
-RQ_QUEUES = {
-    'default': {
-        'URL': REDIS_URL,
-        'DB': 0,
-    },
-    'high': {
-        'URL': REDIS_URL,
-        'DB': 1,
-    },
-    # 'low': {
-    #     'URL': REDIS_URL,
-    #     'DB': 2,
-    # }
-}
-
+TEMPLATE_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIRS = (os.path.join(TEMPLATE_ROOT, 'templates'),)
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader'
+    )

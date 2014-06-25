@@ -16,3 +16,4 @@ class GSE(models.Model):
     class Meta(object):
         verbose_name = 'GSE'
         verbose_name_plural = 'GSEs'
+
