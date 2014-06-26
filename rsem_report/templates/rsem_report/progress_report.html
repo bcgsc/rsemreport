@@ -1,8 +1,11 @@
+{% load staticfiles %}
 <html>
   <head>
     <title> GSE Analysis Progress Report</title>
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+{#    <link rel="stylesheet" type="text/css" media="all" href="{% static 'rsem_report/some.css' %}" /> #}
+<script src="{% static 'rsem_report/ZeroClipboard/ZeroClipboard.min.js' %}"></script>
   </head>
 <body>
 <h1>Latest Report </h1>
@@ -29,12 +32,30 @@
       <td>{{gse.num_passed_gsms}}</td>
       <td>{{gse.num_not_passed_gsms}}</td>
       <td>{{gse.path}}</td>
-      <td>{{gse.passed_gsms}}</td>
-      <td>{{gse.not_passed_gsms}}</td>
+      <td>
+	{# onclick="return false;" to avoid the page from being scrolled to the top #}
+	{% for gsm in gse.passed_gsms_as_list %}
+	  <a href="#" onclick="return false;" class="gsm" id="{{gsm}}" data-clipboard-text="{{gse.path}}/{{gsm}}">{{gsm}}</a>
+	{% endfor %}
+      </td>
+      <td>
+	{% for gsm in gse.not_passed_gsms_as_list %}
+	  <a href="#" onclick="return false;" class="gsm" id="{{gsm}}" data-clipboard-text="{{gse.path}}/{{gsm}}">{{gsm}}</a>
+	{% endfor %}
+      </td>
       <td>{{gse.updated|date:"SHORT_DATETIME_FORMAT"}}</td>
     </tr>
   {% endfor %}
 </table>
+
+<script type="text/javascript">
+var client = new ZeroClipboard($('a.gsm'));
+client.on( "ready", function( readyEvent ) {
+  client.on( "aftercopy", function( event ) {
+    alert("Copied text to clipboard: " + event.data["text/plain"] );
+  } );
+} );
+</script>
 
 </body>
 </html>
