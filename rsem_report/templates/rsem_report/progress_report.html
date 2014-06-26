@@ -11,9 +11,13 @@
     <th>ID</th>
     <th>GSE</th>
     <th># of passed GSMs</th>
-    <th># of not passed GSMs</th>
+    <th># of running GSMs</th>
+    <th># of queued GSMs</th>
+    <th># of failed GSMs</th>
     <th>Passed GSMs</th>
-    <th>Not passed GSMs</th>
+    <th>Running GSMs</th>
+    <th>Queued GSMs</th>
+    <th>Failed GSMs</th>
     <th>Updated</th>
   </tr>
 
@@ -23,7 +27,10 @@
       <td>{{forloop.counter}}</td>
       <td>{{gse.name}}</td>
       <td>{{gse.num_passed_gsms}}</td>
-      <td>{{gse.num_not_passed_gsms}}</td>
+      <td>{{gse.num_running_gsms}}</td>
+      <td>{{gse.num_queued_gsms}}</td>
+      <td>{{gse.num_failed_gsms}}</td>
+
       <td>
 	{# onclick="return false;" to avoid the page from being scrolled to the top #}
 	{% for gsm in gse.passed_gsms_as_list %}
@@ -31,10 +38,21 @@
 	{% endfor %}
       </td>
       <td>
-	{% for gsm in gse.not_passed_gsms_as_list %}
+	{% for gsm in gse.running_gsms_as_list %}
 	  <a href="#" onclick="return false;" class="gsm" id="{{gsm}}" data-clipboard-text="{{gse.path}}/{{gsm}}">{{gsm}}</a>
 	{% endfor %}
       </td>
+      <td>
+	{% for gsm in gse.queued_gsms_as_list %}
+	  <a href="#" onclick="return false;" class="gsm" id="{{gsm}}" data-clipboard-text="{{gse.path}}/{{gsm}}">{{gsm}}</a>
+	{% endfor %}
+      </td>
+      <td>
+	{% for gsm in gse.failed_gsms_as_list %}
+	  <a href="#" onclick="return false;" class="gsm" id="{{gsm}}" data-clipboard-text="{{gse.path}}/{{gsm}}">{{gsm}}</a>
+	{% endfor %}
+      </td>
+
       <td>{{gse.updated|date:"SHORT_DATETIME_FORMAT"}}</td>
     </tr>
   {% endfor %}

@@ -46,16 +46,23 @@ def fetch_report_data():
     GSE_objs = []
     for gse in sorted(data.keys()):
         D = data[gse]
-        passed = False if D['not_passed_gsms'] else True
+        # if the sum is zero, that means it's passed
+        passed = not bool(D['failed_gsms'] +
+                          D['queued_gsms'] +
+                          D['running_gsms'])
         kwargs = dict(
             name=D['name'],
             path=', '.join(D['path']),
             passed_gsms=', '.join(D['passed_gsms']),
-            not_passed_gsms=', '.join(D['not_passed_gsms']),
+            failed_gsms=', '.join(D['failed_gsms']),
+            queued_gsms=', '.join(D['queued_gsms']),
+            running_gsms=', '.join(D['running_gsms']),
             
             passed=passed,
             num_passed_gsms=len(D['passed_gsms']),
-            num_not_passed_gsms=len(D['not_passed_gsms']))
+            num_failed_gsms=len(D['failed_gsms']),
+            num_queued_gsms=len(D['queued_gsms']),
+            num_running_gsms=len(D['running_gsms']))
         try:
             gse_obj = GSE.objects.get(name=gse)
             if not gse_obj.passed:
@@ -69,4 +76,3 @@ def fetch_report_data():
             gse_obj = GSE(**kwargs)
             GSE_objs.append(gse_obj)
     GSE.objects.bulk_create(GSE_objs)
-
