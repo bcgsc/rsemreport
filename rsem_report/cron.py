@@ -9,7 +9,7 @@ logging.basicConfig(
     filename=os.path.expanduser('~/cron_rsem_report.log'),
     format='%(asctime)s %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p',
-    level=logging.DEBUG)
+    level=logging.INFO)
 
 from models import GSE
 
