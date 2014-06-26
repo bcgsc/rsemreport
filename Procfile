@@ -1,5 +1,1 @@
-web: python manage.py runserver
-# redis: redis-server 
-# worker: sleep 1 && python manage.py rqworker default
-# worker: sleep 1 && python manage.py rqworker high
-# worker: python manage.py rqscheduler
+web: python manage.py runserver 0.0.0.0:8000
