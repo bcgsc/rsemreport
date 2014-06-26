@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>{% block title %} {% endblock %}</title>
+
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+      {# JUST FOR REFERENCE #}
+      {# <link rel="stylesheet" type="text/css" media="all" href="{% static 'rsem_report/some.css' %}" /> #}
+
+    <style> 
+      {# to prevent header from overlapping with top content of the page #}
+      body {padding-top: 60px;}
+    </style>
+
+    {# like meta base <style>, <meta>, <link>, <noscript>, and <base>, but NOT <script>, which should go to the end #} 
+    {% block head %} {% endblock %}
+  </head>
+
+<body>
+
+{% include "rsem_report/header.html" %}
+
+{% block body %} {% endblock %}
+
+</body>
+</html>

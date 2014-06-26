@@ -1,0 +1,48 @@
+{% extends "rsem_report/base.html" %}
+
+{% block title %} GSE Analysis Stats {% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+
+<table class="table table-hover">
+  <tr>
+    {% for i in '123' %}
+      <th>ID</th>
+      <th>GSE</th>
+      <th>passed/total</th>
+      <th>passed %</th>
+    {% endfor %}
+  </tr>
+
+  {% for gse in gses %}
+    {% if forloop.first %}
+      <tr>
+    {% endif %}
+
+    <td>{{forloop.counter}}</td>
+    <td><a href="{% url 'home' %}#{{gse.name}}">{{gse.name}}</a></td>
+    <td>{{gse.num_passed_gsms}}/{{gse.num_passed_gsms|add:gse.num_not_passed_gsms}}</td>
+    {% if gse.passed_gsms_percentage < 100 %}
+      <td class="danger">
+    {% else %}
+      <td class="success">
+    {% endif %}
+         {{gse.passed_gsms_percentage|floatformat}}
+      </td>
+
+    {% if forloop.counter|divisibleby:"3" %}
+      </tr><tr>
+    {% endif %}
+
+    {% if forloop.last %}
+      </tr>
+    {% endif %}
+  {% endfor %}
+</table>
+  
+</div>
+
+{% endblock %}
