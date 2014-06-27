@@ -2,30 +2,28 @@ from django.shortcuts import render
 
 from rsem_report.models import GSE
 
-def home(request):
-    gses = GSE.objects.all()
+def update_and_sort_gses(gses):
     for gse in gses:
         gse.passed_gsms_as_list = gse.passed_gsms.split(', ')
         gse.running_gsms_as_list = gse.running_gsms.split(', ')
         gse.queued_gsms_as_list = gse.queued_gsms.split(', ')
         gse.failed_gsms_as_list = gse.failed_gsms.split(', ')
+    gses = sorted(gses, key=lambda x: x.name)
+    return gses
+
+def home(request):
+    gses = GSE.objects.all()
+    gses = update_and_sort_gses(gses)
     return render(request, 'rsem_report/progress_report.html', {'gses':gses})
 
 def passed_GSMs(request):
     gses = GSE.objects.filter(passed=True)
-    for gse in gses:
-        gse.passed_gsms_as_list = gse.passed_gsms.split(', ')
+    gses = update_and_sort_gses(gses)
     return render(request, 'rsem_report/progress_report.html', {'gses':gses})
-
-    return 'NA'
 
 def not_passed_GSMs(request):
     gses = GSE.objects.filter(passed=False)
-    for gse in gses:
-        gse.passed_gsms_as_list = gse.passed_gsms.split(', ')
-        gse.running_gsms_as_list = gse.running_gsms.split(', ')
-        gse.queued_gsms_as_list = gse.queued_gsms.split(', ')
-        gse.failed_gsms_as_list = gse.failed_gsms.split(', ')
+    gses = update_and_sort_gses(gses)
     return render(request, 'rsem_report/progress_report.html', {'gses':gses})
 
 def stats(request):
