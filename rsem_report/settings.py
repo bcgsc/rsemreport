@@ -21,11 +21,9 @@ SECRET_KEY = 'es^j#4!@l$55us=^04sop)!+vczm%1(20jtu$9b(y&*9+(q_t^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+ALLOWED_HOSTS = ['zxue01-centos', 'zxue01-centos.phage.bcgsc.ca']
 
 TEMPLATE_DEBUG = True
-
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
