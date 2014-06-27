@@ -19,8 +19,7 @@ urlpatterns = patterns('',
 
 # NOT for production use!
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
-from django.contrib.staticfiles import views
 if settings.DEBUG:
-    urlpatterns += [
-        url(r'^static/(?P<path>.*)$', views.serve),
-    ]
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+    urlpatterns += staticfiles_urlpatterns()
+
