@@ -65,7 +65,7 @@ def fetch_report_data():
             num_running_gsms=len(D['running_gsms']))
         try:
             gse_obj = GSE.objects.get(name=gse)
-            if not kwargs['passed']:
+            if not gse_obj.passed or not kwargs['passed']:
                 # need to do some update
                 logging.info('Updating {0}'.format(gse))
                 for key, value in kwargs.iteritems():
