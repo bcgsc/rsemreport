@@ -6,7 +6,7 @@ import paramiko
 import yaml
 import logging
 logging.basicConfig(
-    filename=os.path.expanduser('~/cron_rsem_report.log'),
+    filename=os.path.join(os.path.dirname(__file__), 'cron_rsem_report.log'),
     format='%(asctime)s %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p',
     level=logging.INFO)
