@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""example run of this script:
+python collect_rsem_progress_data.py \
+  -d rsem_output_dir [rsem_output_dir2, rsem_output_dir3, ...] \
+  --qstat-cmd 'qstat -xml -u zxue'
+"""
+
 import os
 import sys
 import re
@@ -74,7 +80,7 @@ def collect_report_data_per_dir(dir_to_walk, report_data,
     """
     for root, dirs, files in os.walk(os.path.abspath(dir_to_walk)):
         gse_path, gsm = os.path.split(root)
-        gse = os.path.basename(gse_path)
+        gse = os.path.basename(os.path.dirname(gse_path))
         if re.search('GSM\d+$', gsm) and re.search('GSE\d+$', gse):
             if gse not in report_data:
                 _ = report_data[gse] = {}
@@ -104,7 +110,8 @@ def collect_report_data_per_dir(dir_to_walk, report_data,
 
 def main():
     options = parse_args()
-    running_gsms, queued_gsms = get_jobs_from_qstat_data(options.qstat_cmd)
+    qstat_cmd = options.qstat_cmd.split()
+    running_gsms, queued_gsms = get_jobs_from_qstat_data(qstat_cmd)
 
     dirs_to_walk = options.dirs
     report_data = {}
@@ -119,18 +126,20 @@ def main():
 def parse_args():
     parser = argparse.ArgumentParser(description='report progress of GSE analysis')
     parser.add_argument(
-        '--qstat-cmd', default='qstat -xml -u zxue'.split(), nargs='+',
-        help='shell command to fetch xml from qstat output')
+        '--qstat-cmd',
+        help="shell command to fetch xml from qstat output, e.g. 'qstat -xml -u zxue'")
     parser.add_argument(
         '-d', '--dirs', required=True, nargs='+',
         help='''
 The directory where GSE and GSM folders are located, must follow the hierachy like
-GSE24455/
-|-- GSM602557
-|-- GSM602558
-|-- GSM602559
-|-- GSM602560
-|-- GSM602561
+rsem_output/
+|-- GSExxxxx
+|   `-- homo_sapiens
+|       |-- GSMxxxxxxx
+|       |-- GSMxxxxxxx
+|-- GSExxxxx
+|   `-- mus_musculus
+|       |-- GSMxxxxxxx
 '''),
     parser.add_argument(
         '--flag_file', default='rsem.COMPLETE',
