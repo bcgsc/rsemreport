@@ -17,38 +17,13 @@ import subprocess
 
 import xml.etree.ElementTree as xml
 
-# class GSEReportItem(object):
-#     def __init__(self, gse_report_data):
-#         """
-#         :param gse_report_data: a dict with the following keys
-#         """
-#         self.name = gse_report_data['name']
-#         self.path = gse_report_data['path']
-#         self.passed_gsms = sorted(gse_report_data['passed_gsms'])
-#         self.not_passed_gsms = sorted(gse_report_data['not_passed_gsms'])
-
-#         self.passed = not self.not_passed_gsms
-#         self.num_passed_gsms = len(self.passed_gsms)
-#         self.num_not_passed_gsms = len(self.not_passed_gsms)
-
-# def write_report(report_data):
-#     gse_report_items = []
-#     for gse in sorted(report_data.keys()):
-#         gse_ri = GSEReportItem(report_data[gse])
-#         gse_report_items.append(gse_ri)        
-
-#     from jinja2 import Environment, PackageLoader
-#     env = Environment(loader=PackageLoader('gen_progress_report', '.'))
-#     template = env.get_template('progress_report.template.html')
-#     content = template.render(gse_report_items=gse_report_items)
-#     with open('progress_report.html', 'wb') as opf:
-#         opf.write(content)
 
 def get_qstat_data(qstat_cmd):
     proc = subprocess.Popen(qstat_cmd, stdout=subprocess.PIPE)
     stdout, stderr = proc.communicate()
     # stdout: the raw_xml data wanted 
     return stdout
+
 
 def get_jobs_from_qstat_data(qstat_cmd):
     """
@@ -70,6 +45,7 @@ def get_jobs_from_qstat_data(qstat_cmd):
         elif state == 'pending':
             queued_gsms.append(gsm)
     return running_gsms, queued_gsms
+
 
 def collect_report_data_per_dir(dir_to_walk, report_data,
                                 running_gsms, queued_gsms,
@@ -108,6 +84,7 @@ def collect_report_data_per_dir(dir_to_walk, report_data,
                     # shouldn't be walked.
                     report_data[gse]['failed_gsms'].append(gsm)
 
+
 def main():
     options = parse_args()
     qstat_cmd = options.qstat_cmd.split()
@@ -122,6 +99,7 @@ def main():
             options)
 
     sys.stdout.write(json.dumps(report_data))
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='report progress of GSE analysis')
