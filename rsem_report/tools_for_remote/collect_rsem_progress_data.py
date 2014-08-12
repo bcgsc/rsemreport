@@ -17,13 +17,11 @@ import subprocess
 
 import xml.etree.ElementTree as xml
 
-
 def get_qstat_data(qstat_cmd):
     proc = subprocess.Popen(qstat_cmd, stdout=subprocess.PIPE)
     stdout, stderr = proc.communicate()
     # stdout: the raw_xml data wanted 
     return stdout
-
 
 def get_jobs_from_qstat_data(qstat_cmd):
     """
@@ -47,42 +45,47 @@ def get_jobs_from_qstat_data(qstat_cmd):
     return running_gsms, queued_gsms
 
 
-def collect_report_data_per_dir(dir_to_walk, report_data,
-                                running_gsms, queued_gsms,
-                                options):
+def collect_report_data_per_dir(
+    dir_to_walk, running_gsms, queued_gsms, options):
     """
     :param running_gsms: running gsms determined from qstat output
     :param queued_gsms: queued_gsms determined from qstat output
     """
+    res = {dir_to_walk: {}}
     for root, dirs, files in os.walk(os.path.abspath(dir_to_walk)):
+        # gse_path: e.g. path/to/<GSExxxxxx>/<species>
         gse_path, gsm = os.path.split(root)
+        species = os.path.basename(gse_path)
         gse = os.path.basename(os.path.dirname(gse_path))
         if re.search('GSM\d+$', gsm) and re.search('GSE\d+$', gse):
-            if gse not in report_data:
-                _ = report_data[gse] = {}
-                _['name'] = gse
-                _['path'] = [gse_path]
-                _['passed_gsms'] = []
-                _['failed_gsms'] = []
-                _['queued_gsms'] = []
-                _['running_gsms'] = []
-            else:
-                # Since GSE may contain GSMs from multiple species
-                if gse_path not in report_data[gse]['path']:
-                    report_data[gse]['path'].append(gse_path)
+            if gse not in res[dir_to_walk]:
+                res[dir_to_walk][gse] = {}
+            dd = res[dir_to_walk][gse]
 
-            if options.flag_file in files:  # passed
-                report_data[gse]['passed_gsms'].append(gsm)
-            else:               # not passed
-                if gsm in queued_gsms:
-                    report_data[gse]['queued_gsms'].append(gsm)
-                elif gsm in running_gsms:
-                    report_data[gse]['running_gsms'].append(gsm)
-                else:
-                    # if it's not in queue, and unfinished, assume it's a
-                    # failed job, if it hasn't started running, the folder
-                    # shouldn't be walked.
-                    report_data[gse]['failed_gsms'].append(gsm)
+            if species not in dd:
+                dd[species] = {}
+            dd = res[dir_to_walk][gse][species]
+
+            dd[gsm] = {}
+            if not files:
+                # if not files are found in the directory, it means the
+                # analysis hasn't started yet, just the directory is
+                # initialized
+                dd[gsm].update(status='none')
+            else:
+                if options.flag_file in files:
+                    # e.g. rsem.COMPLIETE exists, meaning passed
+                    dd[gsm].update(status='passed')
+                else:               # not passed
+                    if gsm in queued_gsms:
+                        dd[gsm].update(status='queued')
+                    elif gsm in running_gsms:
+                        dd[gsm].update(status='running')
+                    else:
+                        # if it's not in queue, and unfinished, assume it's a
+                        # failed job
+                        dd['failed_gsms'].update(status='failed')
+    return res
 
 
 def main():
@@ -93,13 +96,13 @@ def main():
     dirs_to_walk = options.dirs
     report_data = {}
     for dir_to_walk in dirs_to_walk:
-        collect_report_data_per_dir(
-            dir_to_walk, report_data, 
-            running_gsms, queued_gsms,            
-            options)
+        res = collect_report_data_per_dir(
+            dir_to_walk, running_gsms, queued_gsms, options)
+        report_data.update(res)
 
+    # from pprint import pprint as pp
+    # pp(report_data)
     sys.stdout.write(json.dumps(report_data))
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description='report progress of GSE analysis')
@@ -128,4 +131,3 @@ rsem_output/
 
 if __name__ == "__main__":
     main()
-
