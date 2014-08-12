@@ -14,10 +14,12 @@
     <th># of running GSMs</th>
     <th># of queued GSMs</th>
     <th># of failed GSMs</th>
+    <th># of None GSMs</th>
     <th>Passed GSMs</th>
     <th>Running GSMs</th>
     <th>Queued GSMs</th>
     <th>Failed GSMs</th>
+    <th>None GSMs*</th>
     <th>Updated</th>
   </tr>
 
@@ -30,26 +32,32 @@
       <td>{{gse.num_running_gsms}}</td>
       <td>{{gse.num_queued_gsms}}</td>
       <td>{{gse.num_failed_gsms}}</td>
+      <td>{{gse.num_none_gsms}}</td>
 
       <td>
 	{# onclick="return false;" to avoid the page from being scrolled to the top #}
-	{% for gsm in gse.passed_gsms_as_list %}
-	  <a href="#" onclick="return false;" class="gsm" id="{{gsm}}" data-clipboard-text="{{gse.path}}/{{gsm}}">{{gsm}}</a>
+	{% for gsm in gse.passed_gsms %}
+	  <a href="#" onclick="return false;" class="gsm" id="{{gsm.name}}" data-clipboard-text="{{gsm.path}}">{{gsm.name}}</a>
 	{% endfor %}
       </td>
       <td>
-	{% for gsm in gse.running_gsms_as_list %}
-	  <a href="#" onclick="return false;" class="gsm" id="{{gsm}}" data-clipboard-text="{{gse.path}}/{{gsm}}">{{gsm}}</a>
+	{% for gsm in gse.running_gsms %}
+	  <a href="#" onclick="return false;" class="gsm" id="{{gsm.name}}" data-clipboard-text="{{gsm.path}}">{{gsm.name}}</a>
 	{% endfor %}
       </td>
       <td>
-	{% for gsm in gse.queued_gsms_as_list %}
-	  <a href="#" onclick="return false;" class="gsm" id="{{gsm}}" data-clipboard-text="{{gse.path}}/{{gsm}}">{{gsm}}</a>
+	{% for gsm in gse.queued_gsms %}
+	  <a href="#" onclick="return false;" class="gsm" id="{{gsm.name}}" data-clipboard-text="{{gsm.path}}">{{gsm.name}}</a>
 	{% endfor %}
       </td>
       <td>
-	{% for gsm in gse.failed_gsms_as_list %}
-	  <a href="#" onclick="return false;" class="gsm" id="{{gsm}}" data-clipboard-text="{{gse.path}}/{{gsm}}">{{gsm}}</a>
+	{% for gsm in gse.failed_gsms %}
+	  <a href="#" onclick="return false;" class="gsm" id="{{gsm.name}}" data-clipboard-text="{{gsm.path}}">{{gsm.name}}</a>
+	{% endfor %}
+      </td>
+      <td>
+	{% for gsm in gse.none_gsms %}
+	  <a href="#" onclick="return false;" class="gsm" id="{{gsm.name}}" data-clipboard-text="{{gsm.path}}">{{gsm.name}}</a>
 	{% endfor %}
       </td>
 
@@ -57,6 +65,8 @@
     </tr>
   {% endfor %}
 </table>
+
+<div class="container"><p><strong>None GSMs*</strong>: means GSMs whose analysis have never started yet</p></div>
 
 
 {# put <script> at the end to avoid blocking loading the page #}
