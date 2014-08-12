@@ -11,7 +11,7 @@ logging.basicConfig(
     datefmt='%m/%d/%Y %I:%M:%S %p',
     level=logging.INFO)
 
-from models import GSE
+from models import GSE, Species, GSM
 
 with open(os.path.join(os.path.dirname(__file__), 'cron_config.yaml')) as inf:
     config = yaml.load(inf.read())
@@ -43,36 +43,51 @@ def fetch_report_data():
     C = config['fetch_report_data']
     res = sshexec(C['host'], C['username'], C['cmd'])
     data = json.loads(res[0])
-    GSE_objs = []
-    for gse in sorted(data.keys()):
-        D = data[gse]
-        # if the sum is zero, that means it's passed
-        passed = not bool(D['failed_gsms'] +
-                          D['queued_gsms'] +
-                          D['running_gsms'])
-        kwargs = dict(
-            name=D['name'],
-            path=', '.join(D['path']),
-            passed_gsms=', '.join(D['passed_gsms']),
-            failed_gsms=', '.join(D['failed_gsms']),
-            queued_gsms=', '.join(D['queued_gsms']),
-            running_gsms=', '.join(D['running_gsms']),
-            
-            passed=passed,
-            num_passed_gsms=len(D['passed_gsms']),
-            num_failed_gsms=len(D['failed_gsms']),
-            num_queued_gsms=len(D['queued_gsms']),
-            num_running_gsms=len(D['running_gsms']))
-        try:
-            gse_obj = GSE.objects.get(name=gse)
-            if not gse_obj.passed or not kwargs['passed']:
-                # need to do some update
-                logging.info('Updating {0}'.format(gse))
-                for key, value in kwargs.iteritems():
-                    setattr(gse_obj, key, value)
-                gse_obj.save()
-        except GSE.DoesNotExist:
-            logging.info('Creating {0}'.format(gse))
-            gse_obj = GSE(**kwargs)
-            GSE_objs.append(gse_obj)
-    GSE.objects.bulk_create(GSE_objs)
+
+    gsm_objs = []
+    for path in data:
+        for gse in data[path]:
+            # _: ignore the value created variable
+            gse_obj, _ = GSE.objects.get_or_create(name=gse)
+            for species in data[path][gse]:
+                # homo_sapiens => Homo sapiens
+                species_name = species.replace('_', ' ').capitalize()
+                species_obj, _ = Species.objects.get_or_create(name=species_name)
+                for gsm in data[path][gse][species]:
+                    status = data[path][gse][species][gsm]['status']
+                    kwargs = dict(
+                        name=gsm,
+                        gse=gse_obj,
+                        species=species_obj,
+                        path=os.path.join(path, gse, species, gsm),
+                        status=status)
+                    try:
+                        gsm_obj = GSM.objects.get(name=gsm)
+                        if gsm_obj.status is not 'passed' or status is not 'passed':
+                            # need to do some update
+                            logging.info('Updating {0}'.format(gsm))
+                            for key, value in kwargs.iteritems():
+                                setattr(gsm_obj, key, value)
+                            gsm_obj.save()
+                    except GSM.DoesNotExist:
+                        logging.info('Creating {0}'.format(gsm))
+                        gsm_obj = GSM(**kwargs)
+                        gsm_objs.append(gsm_obj)
+    GSM.objects.bulk_create(gsm_objs)
+
+    # update GSEs based on passed
+    gses = GSE.objects.all()
+    for gse in gses:
+        if not gse.passed:
+            gse.passed_gsms = gse.gsm_set.filter(status='passed')
+            gse.running_gsms = gse.gsm_set.filter(status='running')
+            gse.queued_gsms = gse.gsm_set.filter(status='queued')
+            gse.failed_gsms = gse.gsm_set.filter(status='failed')
+            gse.none_gsms = gse.gsm_set.filter(status='none')
+
+            if (gse.running_gsms.count() == 0 and 
+                gse.queued_gsms.count() == 0 and
+                gse.failed_gsms.count() == 0 and
+                gse.none_gsms.count() == 0):
+                gse.passed = True
+                gse.save()
