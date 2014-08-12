@@ -63,9 +63,10 @@ def fetch_report_data():
                         status=status)
                     try:
                         gsm_obj = GSM.objects.get(name=gsm)
-                        if gsm_obj.status is not 'passed' or status is not 'passed':
+                        if gsm_obj.status != status:
                             # need to do some update
-                            logging.info('Updating {0}'.format(gsm))
+                            logging.info('Updating {0}: {1} => {2}'.format(
+                                gsm, gsm_obj.status, status))
                             for key, value in kwargs.iteritems():
                                 setattr(gsm_obj, key, value)
                             gsm_obj.save()
