@@ -51,6 +51,11 @@ def collect_report_data_per_dir(
     :param running_gsms: running gsms determined from qstat output
     :param queued_gsms: queued_gsms determined from qstat output
     """
+
+    # collect the files that will be produced by rsem immediately after its run
+    # starts
+    RE_failed_signal_file = re.compile('align\.stats')
+    
     res = {dir_to_walk: {}}
     for root, dirs, files in os.walk(os.path.abspath(dir_to_walk)):
         # gse_path: e.g. path/to/<GSExxxxxx>/<species>
@@ -67,24 +72,20 @@ def collect_report_data_per_dir(
             dd = res[dir_to_walk][gse][species]
 
             dd[gsm] = {}
-            if not files:
-                # if not files are found in the directory, it means the
-                # analysis hasn't started yet, just the directory is
-                # initialized
-                dd[gsm].update(status='none')
+            if gsm in queued_gsms:
+                dd[gsm].update(status='queued')
+            elif gsm in running_gsms:
+                dd[gsm].update(status='running')
+            elif options.flag_file in files:
+                # e.g. rsem.COMPLIETE exists, meaning passed
+                dd[gsm].update(status='passed')
+            elif any(map(RE_failed_signal_file.search, files)):
+                # if it doesn't have rsem.COMPLETE, not in queue, and running,
+                # but with failed_signal_file, then it's a failed job
+                dd[gsm].update(status='failed')
             else:
-                if options.flag_file in files:
-                    # e.g. rsem.COMPLIETE exists, meaning passed
-                    dd[gsm].update(status='passed')
-                else:               # not passed
-                    if gsm in queued_gsms:
-                        dd[gsm].update(status='queued')
-                    elif gsm in running_gsms:
-                        dd[gsm].update(status='running')
-                    else:
-                        # if it's not in queue, and unfinished, assume it's a
-                        # failed job
-                        dd['failed_gsms'].update(status='failed')
+                # otherwise, the job probably hasn't started yet
+                dd[gsm].update(status='none')
     return res
 
 
