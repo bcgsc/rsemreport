@@ -2,17 +2,8 @@ from django.db import models
 
 class GSE(models.Model):
     name = models.CharField(max_length=20)
-    path = models.CharField(max_length=200)
-    passed_gsms = models.TextField()
-    failed_gsms = models.TextField()
-    queued_gsms = models.TextField()
-    running_gsms = models.TextField()
-
-    passed = models.BooleanField()
-    num_passed_gsms = models.PositiveSmallIntegerField()
-    num_failed_gsms = models.PositiveSmallIntegerField()
-    num_queued_gsms = models.PositiveSmallIntegerField()
-    num_running_gsms = models.PositiveSmallIntegerField()
+    # if True, meaning all GSMs have been successfully analyzed 
+    passed = models.BooleanField(default=False)
 
     created = models.DateTimeField(auto_now_add=True, verbose_name='Created')
     updated = models.DateTimeField(auto_now=True, verbose_name='Updated')
@@ -21,3 +12,33 @@ class GSE(models.Model):
         verbose_name = 'GSE'
         verbose_name_plural = 'GSEs'
 
+
+class Species(models.Model):
+    name = models.CharField(max_length=20)
+
+
+class GSM(models.Model):
+    name = models.CharField(max_length=20)
+    gse = models.ForeignKey('GSE')
+    species = models.ForeignKey('Species')
+    path = models.CharField(max_length=200)
+
+    status = models.CharField(
+        max_length=10,
+        # passed: analysis finished successfully
+        # failed: analysis didn't finish successfully
+        # running: analysis hasn't finished yet
+        # queued: analysis is found in the job scheduler queue
+        # none: analysis hasn't started yet, e.g. empty directory detected
+        choices=(('passed', 'passed'),
+                 ('failed', 'failed'),
+                 ('queued', 'queued'),
+                 ('running', 'running'),
+                 ('none', 'none')))
+
+    created = models.DateTimeField(auto_now_add=True, verbose_name='Created')
+    updated = models.DateTimeField(auto_now=True, verbose_name='Updated')
+
+    class Meta(object):
+        verbose_name = 'GSM'
+        verbose_name_plural = 'GSMs'
