@@ -78,16 +78,22 @@ def fetch_report_data():
     # update GSEs based on passed
     gses = GSE.objects.all()
     for gse in gses:
-        if not gse.passed:
-            gse.passed_gsms = gse.gsm_set.filter(status='passed')
-            gse.running_gsms = gse.gsm_set.filter(status='running')
-            gse.queued_gsms = gse.gsm_set.filter(status='queued')
-            gse.failed_gsms = gse.gsm_set.filter(status='failed')
-            gse.none_gsms = gse.gsm_set.filter(status='none')
+        # passed_gsms = gse.gsm_set.filter(status='passed')
+        running_gsms = gse.gsm_set.filter(status='running')
+        queued_gsms = gse.gsm_set.filter(status='queued')
+        failed_gsms = gse.gsm_set.filter(status='failed')
+        none_gsms = gse.gsm_set.filter(status='none')
 
-            if (gse.running_gsms.count() == 0 and 
-                gse.queued_gsms.count() == 0 and
-                gse.failed_gsms.count() == 0 and
-                gse.none_gsms.count() == 0):
+        if (running_gsms.count() == 0 and 
+            queued_gsms.count() == 0 and
+            failed_gsms.count() == 0 and
+            none_gsms.count() == 0):
+            if gse.passed == False:
                 gse.passed = True
+                gse.save()
+        else:
+            # adapts to mannual changed, e.g. adding or removing GSMs after the
+            # GSE is once passed
+            if gse.passed == True:
+                gse.passed = False
                 gse.save()
