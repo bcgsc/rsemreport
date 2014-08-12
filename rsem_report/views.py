@@ -1,4 +1,3 @@
-from django.http import HttpResponse
 from django.shortcuts import render
 
 from rsem_report.models import GSE
@@ -16,6 +15,8 @@ def update_and_sort_gses(gses):
         gse.num_queued_gsms = gse.queued_gsms.count()
         gse.num_failed_gsms = gse.failed_gsms.count()
         gse.num_none_gsms = gse.none_gsms.count()
+
+        gse.last_updated_gsm = max(gse.gsm_set.all(), key=lambda x: x.updated)
 
     gses = sorted(gses, key=lambda x: x.name)
     return gses

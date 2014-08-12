@@ -20,7 +20,7 @@
     <th>Queued GSMs</th>
     <th>Failed GSMs</th>
     <th>None GSMs*</th>
-    <th>Updated</th>
+    <th>Last updated GSM</th>
   </tr>
 
   {% for gse in gses %}
@@ -61,7 +61,7 @@
 	{% endfor %}
       </td>
 
-      <td>{{gse.updated|date:"SHORT_DATETIME_FORMAT"}}</td>
+      <td>{{gse.last_updated_gsm.name}} at {{gse.last_updated_gsm.updated|date:"SHORT_DATETIME_FORMAT"}}</td>
     </tr>
   {% endfor %}
 </table>
