@@ -1,0 +1,3 @@
+{% if gsm.name == gse.last_updated_gsm.name %}<mark>{% endif %}
+<a href="#" onclick="return false;" class="gsm" id="{{gsm.name}}" data-clipboard-text="{{gsm.path}}">{{gsm.name}}</a>
+{% if gsm.name == gse.last_updated_gsm.name %}</mark>{% endif %}

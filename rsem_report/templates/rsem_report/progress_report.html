@@ -20,7 +20,7 @@
     <th>Queued GSMs</th>
     <th>Failed GSMs</th>
     <th>None GSMs*</th>
-    <th>Last updated GSM</th>
+    <th>Last updated GSM at</th>
   </tr>
 
   {% for gse in gses %}
@@ -37,39 +37,40 @@
       <td>
 	{# onclick="return false;" to avoid the page from being scrolled to the top #}
 	{% for gsm in gse.passed_gsms %}
-	  <a href="#" onclick="return false;" class="gsm" id="{{gsm.name}}" data-clipboard-text="{{gsm.path}}">{{gsm.name}}</a>
+	  {% include "rsem_report/GSM.html" %}
 	{% endfor %}
       </td>
       <td>
 	{% for gsm in gse.running_gsms %}
-	  <a href="#" onclick="return false;" class="gsm" id="{{gsm.name}}" data-clipboard-text="{{gsm.path}}">{{gsm.name}}</a>
+	  {% include "rsem_report/GSM.html" %}
 	{% endfor %}
       </td>
       <td>
 	{% for gsm in gse.queued_gsms %}
-	  <a href="#" onclick="return false;" class="gsm" id="{{gsm.name}}" data-clipboard-text="{{gsm.path}}">{{gsm.name}}</a>
+	  {% include "rsem_report/GSM.html" %}
 	{% endfor %}
       </td>
       <td>
 	{% for gsm in gse.failed_gsms %}
-	  <a href="#" onclick="return false;" class="gsm" id="{{gsm.name}}" data-clipboard-text="{{gsm.path}}">{{gsm.name}}</a>
+	  {% include "rsem_report/GSM.html" %}
 	{% endfor %}
       </td>
       <td>
 	{% for gsm in gse.none_gsms %}
-	  <a href="#" onclick="return false;" class="gsm" id="{{gsm.name}}" data-clipboard-text="{{gsm.path}}">{{gsm.name}}</a>
+	  {% include "rsem_report/GSM.html" %}
 	{% endfor %}
       </td>
 
-      <td>
-	<a href="#" onclick="return false;" class="gsm" data-clipboard-text="{{gse.last_updated_gsm.path}}">
-	  {{gse.last_updated_gsm.name}}
-	</a> at {{gse.last_updated_gsm.updated|date:"SHORT_DATETIME_FORMAT"}}</td>
+      <td>{{gse.last_updated_gsm.updated|date:"SHORT_DATETIME_FORMAT"}}</td>
+
     </tr>
   {% endfor %}
 </table>
 
-<div class="container"><p><strong>None GSMs*</strong>: means GSMs whose analysis have never started yet</p></div>
+<div class="container">
+  <p><strong>None GSMs*</strong>: means GSMs whose analysis have never started yet</p>
+  <p>highlighted <mark>GSMxxxxxx</mark> is the one that has been updated most recently at the time shown in the last column</p>
+</div>
 
 
 {# put <script> at the end to avoid blocking loading the page #}
