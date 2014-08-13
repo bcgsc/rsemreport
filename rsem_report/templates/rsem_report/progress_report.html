@@ -4,25 +4,32 @@
 
 {% block title %} GSE Analysis Progress Report {% endblock %}
 
+{% block head %}
+  <style>
+    .table tbody>tr>td.vert-align
+    {vertical-align: middle;}
+  </style>
+{% endblock %}
+
 {% block body %}
 
 <table class="table table-bordered">
   <tr>
-    <th>ID</th>
-    <th>GSE</th>
-    <th>Passed GSMs</th>
-    <th>Running GSMs</th>
-    <th>Queued GSMs</th>
-    <th>Failed GSMs</th>
-    <th>None GSMs*</th>
-    <th>Last updated GSM at</th>
+    <th class="text-center">ID</th>
+    <th class="text-center">GSE</th>
+    <th class="text-center">Passed GSMs</th>
+    <th class="text-center">Running GSMs</th>
+    <th class="text-center">Queued GSMs</th>
+    <th class="text-center">Failed GSMs</th>
+    <th class="text-center">None GSMs*</th>
+    <th class="text-center">Last updated GSM at</th>
   </tr>
 
   {% for gse in gses %}
     
       <tr id='{{gse.name}}' class='{% if gse.passed %}success{% else %}danger{% endif %}'>
-      <td>{{forloop.counter}}</td>
-      <td>{{gse.name}}</td>
+      <td class="vert-align">{{forloop.counter}}</td>
+      <td class="vert-align">{{gse.name}}</td>
 
       <td>
 	{# onclick="return false;" to avoid the page from being scrolled to the top #}
@@ -56,7 +63,7 @@
 	{% endfor %}
       </td>
 
-      <td>{{gse.last_updated_gsm.updated|date:"SHORT_DATETIME_FORMAT"}}</td>
+      <td class="vert-align">{{gse.last_updated_gsm.updated|date:"SHORT_DATETIME_FORMAT"}}</td>
 
     </tr>
   {% endfor %}
