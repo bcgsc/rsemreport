@@ -61,7 +61,10 @@
 	{% endfor %}
       </td>
 
-      <td>{{gse.last_updated_gsm.name}} at {{gse.last_updated_gsm.updated|date:"SHORT_DATETIME_FORMAT"}}</td>
+      <td>
+	<a href="#" onclick="return false;" class="gsm" data-clipboard-text="{{gse.last_updated_gsm.path}}">
+	  {{gse.last_updated_gsm.name}}
+	</a> at {{gse.last_updated_gsm.updated|date:"SHORT_DATETIME_FORMAT"}}</td>
     </tr>
   {% endfor %}
 </table>
