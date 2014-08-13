@@ -4,11 +4,11 @@ from rsem_report.models import GSE
 
 def update_and_sort_gses(gses):
     for gse in gses:
-        gse.passed_gsms = gse.gsm_set.filter(status='passed')
-        gse.running_gsms = gse.gsm_set.filter(status='running')
-        gse.queued_gsms = gse.gsm_set.filter(status='queued')
-        gse.failed_gsms = gse.gsm_set.filter(status='failed')
-        gse.none_gsms = gse.gsm_set.filter(status='none')
+        gse.passed_gsms = gse.gsm_set.filter(status='passed').order_by('name')
+        gse.running_gsms = gse.gsm_set.filter(status='running').order_by('name')
+        gse.queued_gsms = gse.gsm_set.filter(status='queued').order_by('name')
+        gse.failed_gsms = gse.gsm_set.filter(status='failed').order_by('name')
+        gse.none_gsms = gse.gsm_set.filter(status='none').order_by('name')
 
         gse.num_passed_gsms = gse.passed_gsms.count()
         gse.num_running_gsms = gse.running_gsms.count()
