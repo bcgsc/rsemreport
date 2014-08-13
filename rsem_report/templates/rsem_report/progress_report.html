@@ -10,11 +10,6 @@
   <tr>
     <th>ID</th>
     <th>GSE</th>
-    <th># of passed GSMs</th>
-    <th># of running GSMs</th>
-    <th># of queued GSMs</th>
-    <th># of failed GSMs</th>
-    <th># of None GSMs</th>
     <th>Passed GSMs</th>
     <th>Running GSMs</th>
     <th>Queued GSMs</th>
@@ -28,34 +23,34 @@
       <tr id='{{gse.name}}' class='{% if gse.passed %}success{% else %}danger{% endif %}'>
       <td>{{forloop.counter}}</td>
       <td>{{gse.name}}</td>
-      <td>{{gse.num_passed_gsms}}</td>
-      <td>{{gse.num_running_gsms}}</td>
-      <td>{{gse.num_queued_gsms}}</td>
-      <td>{{gse.num_failed_gsms}}</td>
-      <td>{{gse.num_none_gsms}}</td>
 
       <td>
 	{# onclick="return false;" to avoid the page from being scrolled to the top #}
+	{% if gse.num_passed_gsms != 0 %}<div>{{gse.num_passed_gsms}}</div>{%endif%}
 	{% for gsm in gse.passed_gsms %}
 	  {% include "rsem_report/GSM.html" %}
 	{% endfor %}
       </td>
       <td>
+	{% if gse.num_running_gsms != 0 %}<div>{{gse.num_running_gsms}}</div>{%endif%}
 	{% for gsm in gse.running_gsms %}
 	  {% include "rsem_report/GSM.html" %}
 	{% endfor %}
       </td>
       <td>
+	{% if gse.num_queued_gsms != 0 %}<div>{{gse.num_queued_gsms}}</div>{%endif%}
 	{% for gsm in gse.queued_gsms %}
 	  {% include "rsem_report/GSM.html" %}
 	{% endfor %}
       </td>
       <td>
+	{% if gse.num_failed_gsms != 0 %}<div>{{gse.num_failed_gsms}}</div>{%endif%}
 	{% for gsm in gse.failed_gsms %}
 	  {% include "rsem_report/GSM.html" %}
 	{% endfor %}
       </td>
       <td>
+	{% if gse.num_none_gsms != 0 %}<div>{{gse.num_none_gsms}}</div>{%endif%}
 	{% for gsm in gse.none_gsms %}
 	  {% include "rsem_report/GSM.html" %}
 	{% endfor %}
