@@ -25,6 +25,20 @@
     <th class="text-center">Last updated GSM at</th>
   </tr>
 
+  <tr>
+  {# skip ID and GSE columns #}
+  <td class="text-center" colspan="2"><strong>Total</strong></td>
+  <td>{{total_passed}}</td>
+  <td>{{total_running}}</td>
+  <td>{{total_queued}}</td>
+  <td>{{total_failed}}</td>
+  <td>{{total_none}}</td>
+
+  {# skip the last column #}
+  <td></td>
+</tr>
+
+
   {% for gse in gses %}
     
       <tr id='{{gse.name}}' class='{% if gse.passed %}success{% else %}danger{% endif %}'>
@@ -64,9 +78,9 @@
       </td>
 
       <td class="vert-align">{{gse.last_updated_gsm.updated|date:"SHORT_DATETIME_FORMAT"}}</td>
-
     </tr>
   {% endfor %}
+
 </table>
 
 <div class="container">
@@ -89,3 +103,4 @@ client.on( "ready", function( readyEvent ) {
 
 {% endblock %}
 
+>
