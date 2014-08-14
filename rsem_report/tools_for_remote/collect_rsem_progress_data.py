@@ -23,25 +23,54 @@ def get_qstat_data(qstat_cmd):
     # stdout: the raw_xml data wanted 
     return stdout
 
-def get_jobs_from_qstat_data(qstat_cmd):
+def get_jobs_from_qstat_data(host, qstat_cmd):
     """
     :param qstat_cmd: should be a list of strings
     """
     raw_xml = get_qstat_data(qstat_cmd)
+    if not raw_xml:
+        return None
     xml_data = xml.fromstring(raw_xml)
+    if host == 'genesis':
+        r, q = analyze_genesis_queue(xml_data)
+    elif host == 'nestor':
+        r, q = analyze_nestor_queue(xml_data)
+    running_gsms, queued_gsms = r, q
+    return running_gsms, queued_gsms
+
+
+def analyze_genesis_queue(xml_data):
     queued_gsms, running_gsms = [], []
     # xpath: finding job_list recursively
     for job in xml_data.findall('.//job_list'):
-        state = job.get('state')
         job_name = job.find('JB_name').text.strip()
         gsm_search = re.search('GSM\d+', job_name)
         if not gsm_search:
             continue
         gsm = gsm_search.group()
+        state = job.get('state')
         if state == 'running':
             running_gsms.append(gsm)
         elif state == 'pending':
             queued_gsms.append(gsm)
+    return running_gsms, queued_gsms
+
+
+def analyze_nestor_queue(xml_data):
+    queued_gsms, running_gsms = [], []
+    queues = xml_data.findall('queue')
+    for queue in queues:
+        for job in queue.findall('job'):
+            job_name = job.get('JobName')
+            gsm_search = re.search('GSM\d+', job_name)
+            if not gsm_search:
+                continue
+            gsm = gsm_search.group()
+            state = job.get('State')
+            if state == 'Running':
+                running_gsms.append(gsm)                
+            elif state == 'Idle':
+                queued_gsms.append(gsm)                
     return running_gsms, queued_gsms
 
 
@@ -91,8 +120,12 @@ def collect_report_data_per_dir(
 
 def main():
     options = parse_args()
+    host = options.host
     qstat_cmd = options.qstat_cmd.split()
-    running_gsms, queued_gsms = get_jobs_from_qstat_data(qstat_cmd)
+    try:
+        running_gsms, queued_gsms = get_jobs_from_qstat_data(host, qstat_cmd)
+    except TypeError:           # qstat or showq error
+        return json.dumps({})
 
     dirs_to_walk = options.dirs
     report_data = {}
@@ -108,8 +141,11 @@ def main():
 def parse_args():
     parser = argparse.ArgumentParser(description='report progress of GSE analysis')
     parser.add_argument(
-        '--qstat-cmd',
-        help="shell command to fetch xml from qstat output, e.g. 'qstat -xml -u zxue'")
+        '--host', required=True, choices=['genesis', 'nestor'],
+        help="the host where progress data is collected")
+    parser.add_argument(
+        '--qstat-cmd', required=True,
+        help="shell command to fetch xml from qstat output, e.g. 'qstat -xml -u username'")
     parser.add_argument(
         '-d', '--dirs', required=True, nargs='+',
         help='''
