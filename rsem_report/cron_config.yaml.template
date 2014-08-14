@@ -1,5 +1,5 @@
 fetch_report_data:
-  freq: "*/1 * * * *"
+  freq: "*/10 * * * *"
   host: "genesis.bcgsc.ca"
   username: "zxue"
-  cmd: "/home/zxue/zx_local/bin/python /extscratch/btl/zxue/rsem_pipeline/rsem_pipeline2/tools/gen_progress_report.py -d /extscratch/btl/zxue/rsem_pipeline/ --json"
+  cmd: "/home/zxue/zx_local/bin/python /home/zxue/collect_rsem_progress_data.py -d /extscratch/btl/zxue/batch8/[0-9][0-9]to[0-9][0-9]/rsem_output --qstat-cmd 'qstat -xml -u zxue'"
