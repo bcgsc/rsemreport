@@ -20,8 +20,8 @@
     <th class="text-center">Passed GSMs</th>
     <th class="text-center">Running GSMs</th>
     <th class="text-center">Queued GSMs</th>
-    <th class="text-center">Failed GSMs</th>
     <th class="text-center">None GSMs*</th>
+    <th class="text-center">Failed GSMs</th>
     <th class="text-center">Last updated GSM at</th>
   </tr>
 
@@ -31,8 +31,8 @@
   <td>{{total_passed}}</td>
   <td>{{total_running}}</td>
   <td>{{total_queued}}</td>
-  <td>{{total_failed}}</td>
   <td>{{total_none}}</td>
+  <td>{{total_failed}}</td>
 
   {# skip the last column #}
   <td></td>
@@ -65,14 +65,14 @@
 	{% endfor %}
       </td>
       <td>
-	{% if gse.num_failed_gsms != 0 %}<div>{{gse.num_failed_gsms}}</div>{%endif%}
-	{% for gsm in gse.failed_gsms %}
+	{% if gse.num_none_gsms != 0 %}<div>{{gse.num_none_gsms}}</div>{%endif%}
+	{% for gsm in gse.none_gsms %}
 	  {% include "rsem_report/GSM.html" %}
 	{% endfor %}
       </td>
       <td>
-	{% if gse.num_none_gsms != 0 %}<div>{{gse.num_none_gsms}}</div>{%endif%}
-	{% for gsm in gse.none_gsms %}
+	{% if gse.num_failed_gsms != 0 %}<div>{{gse.num_failed_gsms}}</div>{%endif%}
+	{% for gsm in gse.failed_gsms %}
 	  {% include "rsem_report/GSM.html" %}
 	{% endfor %}
       </td>
