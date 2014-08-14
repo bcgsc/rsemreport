@@ -32,11 +32,9 @@ def get_jobs_from_qstat_data(host, qstat_cmd):
         return None
     xml_data = xml.fromstring(raw_xml)
     if host == 'genesis':
-        r, q = analyze_genesis_queue(xml_data)
+        return analyze_genesis_queue(xml_data)
     elif host == 'nestor':
-        r, q = analyze_nestor_queue(xml_data)
-    running_gsms, queued_gsms = r, q
-    return running_gsms, queued_gsms
+        return analyze_nestor_queue(xml_data)
 
 
 def analyze_genesis_queue(xml_data):
