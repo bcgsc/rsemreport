@@ -42,6 +42,7 @@ def sshexec(host, username, cmd, private_key_file='~/.ssh/id_rsa'):
 def fetch_report_data():
     C = config['fetch_report_data']
     res = sshexec(C['host'], C['username'], C['cmd'])
+    logging.info(res)
     if not res:
         logging.info(
             'not output returned from {0}@{1}, {2}, possible communication '
