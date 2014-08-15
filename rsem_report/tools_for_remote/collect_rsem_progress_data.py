@@ -67,7 +67,7 @@ def analyze_nestor_queue(xml_data):
             state = job.get('State')
             if state == 'Running':
                 running_gsms.append(gsm)                
-            elif state == 'Idle':
+            elif state == 'Idle' or state == 'BatchHold':
                 queued_gsms.append(gsm)                
     return running_gsms, queued_gsms
 
