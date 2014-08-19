@@ -11,10 +11,14 @@ class GSE(models.Model):
     class Meta(object):
         verbose_name = 'GSE'
         verbose_name_plural = 'GSEs'
+        ordering = ['name']
 
 
 class Species(models.Model):
     name = models.CharField(max_length=20)
+
+    class Meta(object):
+        ordering = ['name']
 
 
 class GSM(models.Model):
@@ -42,3 +46,4 @@ class GSM(models.Model):
     class Meta(object):
         verbose_name = 'GSM'
         verbose_name_plural = 'GSMs'
+        ordering = ['name']
