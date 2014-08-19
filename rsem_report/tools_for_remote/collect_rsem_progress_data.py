@@ -33,8 +33,15 @@ def get_jobs_from_qstat_data(host, qstat_cmd):
     xml_data = xml.fromstring(raw_xml)
     if host == 'genesis':
         return analyze_genesis_queue(xml_data)
+    elif host == 'apollo':
+        # because apollo also uses SGE as genesis, so that output has the same
+        # format
+        return analyze_genesis_queue(xml_data)
     elif host == 'nestor':
         return analyze_nestor_queue(xml_data)
+    else:
+        raise ValueError('analysis for qstat data from {0} [{1}] has not been '
+                         'not implemented yet'.format(host, qstat_cmd))
 
 
 def analyze_genesis_queue(xml_data):
@@ -139,7 +146,7 @@ def main():
 def parse_args():
     parser = argparse.ArgumentParser(description='report progress of GSE analysis')
     parser.add_argument(
-        '--host', required=True, choices=['genesis', 'nestor'],
+        '--host', required=True, choices=['genesis', 'nestor', 'apollo'],
         help="the host where progress data is collected")
     parser.add_argument(
         '--qstat-cmd', required=True,
