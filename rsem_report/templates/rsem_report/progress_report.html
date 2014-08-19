@@ -1,5 +1,8 @@
 {% extends "rsem_report/base.html" %}
 
+{% load humanize %}
+
+
 {% load static from staticfiles %}
 
 {% block title %} GSE Analysis Progress Report {% endblock %}
@@ -77,7 +80,10 @@
 	{% endfor %}
       </td>
 
-      <td class="vert-align">{{gse.last_updated_gsm.updated|date:"SHORT_DATETIME_FORMAT"}}</td>
+      <td class="vert-align">
+	{{gse.last_updated_gsm.updated|date:"SHORT_DATETIME_FORMAT"}} ({{gse.last_updated_gsm.updated|naturaltime}})
+      </td>
+
     </tr>
   {% endfor %}
 
