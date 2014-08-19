@@ -36,14 +36,15 @@ def get_gses_context(gses):
                    total_queued=tq,
                    total_failed=tf,
                    total_none=tn)
+    context.update(get_username_host_context())
+    return context
 
+def get_username_host_context():
     config_file = os.path.join(os.path.dirname(__file__), 'cron_config.yaml')
     with open(config_file) as inf:
         config = yaml.load(inf.read())
         C= config['fetch_report_data']
-        context.update(username=C['username'], host=C['host'])
-    return context
-
+        return dict(username=C['username'], host=C['host'])
 
 def home(request):
     gses = GSE.objects.all()
@@ -73,5 +74,4 @@ def stats(request):
         gse.num_all_gsms = sum([a, b, c, d, e])
         gse.passed_gsms_percentage = float(a) / gse.num_all_gsms * 100
     gses = sorted(gses, key=lambda x: (x.passed_gsms_percentage, x.name))
-    return render(request, 'rsem_report/stats.html', {'gses':context['gses']})
-
+    return render(request, 'rsem_report/stats.html', context)
