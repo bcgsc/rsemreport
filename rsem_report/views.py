@@ -1,3 +1,6 @@
+import os
+import yaml
+
 from django.shortcuts import render
 
 from rsem_report.models import GSE
@@ -33,6 +36,12 @@ def get_gses_context(gses):
                    total_queued=tq,
                    total_failed=tf,
                    total_none=tn)
+
+    config_file = os.path.join(os.path.dirname(__file__), 'cron_config.yaml')
+    with open(config_file) as inf:
+        config = yaml.load(inf.read())
+        C= config['fetch_report_data']
+        context.update(username=C['username'], host=C['host'])
     return context
 
 
