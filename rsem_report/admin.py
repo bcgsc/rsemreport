@@ -4,6 +4,8 @@ from rsem_report.models import GSE, Species, GSM
 class GSEAdmin(admin.ModelAdmin):
     list_display = ['name']
     readonly_fields = ['created', 'updated']
+    search_fields = ('name',)
+
 
 class SpeciesAdmin(admin.ModelAdmin):
     list_display = ['name']
@@ -20,9 +22,11 @@ class GSMAdmin(admin.ModelAdmin):
     get_species.short_description = 'Species'
     get_species.admin_order_field = 'species__name'
 
-    list_display = ['name', 'status', 'get_gse', 'get_species']
+    list_display = ('name', 'status', 'get_gse', 'get_species')
+    ordering = ('gse__name', 'name')
+    search_fields = ('name',)
 
-    readonly_fields = ['created', 'updated']
+    readonly_fields = ('created', 'updated')
 
 
 
