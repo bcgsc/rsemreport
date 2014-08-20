@@ -1,9 +1,9 @@
 {% extends "rsem_report/base.html" %}
 
-{% load humanize %}
-
-
 {% load static from staticfiles %}
+{% load humanize %}
+{% load tz %}
+
 
 {% block title %} GSE Analysis Progress Report {% endblock %}
 
@@ -20,10 +20,10 @@
   <tr>
     <th class="text-center">ID</th>
     <th class="text-center">GSE</th>
-    <th class="text-center">Passed GSMs</th>
-    <th class="text-center">Running GSMs</th>
-    <th class="text-center">Queued GSMs</th>
     <th class="text-center">None GSMs*</th>
+    <th class="text-center">Queued GSMs</th>
+    <th class="text-center">Running GSMs</th>
+    <th class="text-center">Passed GSMs</th>
     <th class="text-center">Failed GSMs</th>
     <th class="text-center">Last updated GSM at</th>
   </tr>
@@ -49,30 +49,34 @@
       <td class="vert-align">{{gse.name}}</td>
 
       <td>
-	{# onclick="return false;" to avoid the page from being scrolled to the top #}
-	{% if gse.num_passed_gsms != 0 %}<div>{{gse.num_passed_gsms}}</div>{%endif%}
-	{% for gsm in gse.passed_gsms %}
+	{% if gse.num_none_gsms != 0 %}<div>{{gse.num_none_gsms}}</div>{%endif%}
+	{% for gsm in gse.none_gsms %}
 	  {% include "rsem_report/GSM.html" %}
 	{% endfor %}
       </td>
-      <td>
-	{% if gse.num_running_gsms != 0 %}<div>{{gse.num_running_gsms}}</div>{%endif%}
-	{% for gsm in gse.running_gsms %}
-	  {% include "rsem_report/GSM.html" %}
-	{% endfor %}
-      </td>
+
       <td>
 	{% if gse.num_queued_gsms != 0 %}<div>{{gse.num_queued_gsms}}</div>{%endif%}
 	{% for gsm in gse.queued_gsms %}
 	  {% include "rsem_report/GSM.html" %}
 	{% endfor %}
       </td>
+
       <td>
-	{% if gse.num_none_gsms != 0 %}<div>{{gse.num_none_gsms}}</div>{%endif%}
-	{% for gsm in gse.none_gsms %}
+	{% if gse.num_running_gsms != 0 %}<div>{{gse.num_running_gsms}}</div>{%endif%}
+	{% for gsm in gse.running_gsms %}
 	  {% include "rsem_report/GSM.html" %}
 	{% endfor %}
       </td>
+
+      <td>
+	{# onclick="return false;" to avoid the page from being scrolled to the top #}
+	{% if gse.num_passed_gsms != 0 %}<div>{{gse.num_passed_gsms}}</div>{%endif%}
+	{% for gsm in gse.passed_gsms %}
+	  {% include "rsem_report/GSM.html" %}
+	{% endfor %}
+      </td>
+
       <td>
 	{% if gse.num_failed_gsms != 0 %}<div>{{gse.num_failed_gsms}}</div>{%endif%}
 	{% for gsm in gse.failed_gsms %}
@@ -80,8 +84,10 @@
 	{% endfor %}
       </td>
 
+      
       <td class="vert-align">
-	{{gse.last_updated_gsm.updated|date:"SHORT_DATETIME_FORMAT"}} ({{gse.last_updated_gsm.updated|naturaltime}})
+	{{gse.last_updated_gsm.updated|date:"SHORT_DATETIME_FORMAT"}}
+	({{gse.last_updated_gsm.updated|naturaltime}})
       </td>
 
     </tr>
