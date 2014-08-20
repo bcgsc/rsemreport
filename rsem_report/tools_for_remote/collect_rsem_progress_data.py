@@ -90,20 +90,23 @@ def collect_report_data_per_dir(
     # starts
     RE_failed_signal_file = re.compile('align\.stats')
     
-    res = {dir_to_walk: {}}
+    res = {}
     for root, dirs, files in os.walk(os.path.abspath(dir_to_walk)):
         # gse_path: e.g. path/to/<GSExxxxxx>/<species>
         gse_path, gsm = os.path.split(root)
         species = os.path.basename(gse_path)
         gse = os.path.basename(os.path.dirname(gse_path))
         if re.search('GSM\d+$', gsm) and re.search('GSE\d+$', gse):
-            if gse not in res[dir_to_walk]:
-                res[dir_to_walk][gse] = {}
-            dd = res[dir_to_walk][gse]
+            rsem_output_dir = os.path.dirname(os.path.dirname(gse_path))
+            if not rsem_output_dir in res:
+                res[rsem_output_dir] = {}
+            if gse not in res[rsem_output_dir]:
+                res[rsem_output_dir][gse] = {}
+            dd = res[rsem_output_dir][gse]
 
             if species not in dd:
                 dd[species] = {}
-            dd = res[dir_to_walk][gse][species]
+            dd = res[rsem_output_dir][gse][species]
 
             dd[gsm] = {}
             if gsm in queued_gsms:
