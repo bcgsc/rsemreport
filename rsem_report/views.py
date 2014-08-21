@@ -2,6 +2,7 @@ import os
 import yaml
 
 from django.shortcuts import render
+from django.core.cache import cache
 
 from rsem_report.models import GSE
 
@@ -47,8 +48,12 @@ def get_username_host_context():
         return dict(username=C['username'], host=C['host'])
 
 def home(request):
-    gses = GSE.objects.all()
-    context = get_gses_context(gses)
+    context = cache.get('all_gses')
+    if not context:
+        gses = GSE.objects.all()
+        context = get_gses_context(gses)
+        # None: cache forever until overwritten by cron.py fetch_report_data
+        cache.set('all_gses', context, None)
     return render(request, 'rsem_report/progress_report.html', context)
 
 
