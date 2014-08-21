@@ -11,6 +11,8 @@ logging.basicConfig(
     datefmt='%m/%d/%Y %I:%M:%S %p',
     level=logging.INFO)
 
+from django.core.cache import cache
+
 from models import GSE, Species, GSM
 
 with open(os.path.join(os.path.dirname(__file__), 'cron_config.yaml')) as inf:
@@ -104,3 +106,71 @@ def fetch_report_data():
             if gse.passed == True:
                 gse.passed = False
                 gse.save()
+    update_cache_all_gses()
+    update_cache_passed_gses()
+    update_cache_not_passed_gses()
+
+def get_gses_context(gses):
+    """update and sort gses, and calculate total stats"""
+
+    # total passed, running, queued, failed, none GSMs
+    tp, tr, tq, tf, tn = [0] * 5
+    for gse in gses:
+        gse.passed_gsms = gse.gsm_set.filter(status='passed').order_by('name')
+        gse.running_gsms = gse.gsm_set.filter(status='running').order_by('name')
+        gse.queued_gsms = gse.gsm_set.filter(status='queued').order_by('name')
+        gse.failed_gsms = gse.gsm_set.filter(status='failed').order_by('name')
+        gse.none_gsms = gse.gsm_set.filter(status='none').order_by('name')
+
+        gse.num_passed_gsms = gse.passed_gsms.count()
+        tp += gse.num_passed_gsms
+        gse.num_running_gsms = gse.running_gsms.count()
+        tr += gse.num_running_gsms
+        gse.num_queued_gsms = gse.queued_gsms.count()
+        tq += gse.num_queued_gsms
+        gse.num_failed_gsms = gse.failed_gsms.count()
+        tf += gse.num_failed_gsms
+        gse.num_none_gsms = gse.none_gsms.count()
+        tn += gse.num_none_gsms
+
+        gse.last_updated_gsm = max(gse.gsm_set.all(), key=lambda x: x.updated)
+
+    context = dict(gses=sorted(gses, key=lambda x: x.name),
+                   total_passed=tp,
+                   total_running=tr,
+                   total_queued=tq,
+                   total_failed=tf,
+                   total_none=tn)
+    context.update(get_username_host_context())
+    return context
+
+def get_username_host_context():
+    config_file = os.path.join(os.path.dirname(__file__), 'cron_config.yaml')
+    with open(config_file) as inf:
+        config = yaml.load(inf.read())
+        C= config['fetch_report_data']
+        return dict(username=C['username'], host=C['host'])
+
+
+def update_cache_all_gses():
+    # better check if the concent of cached content is outdated, but since it's
+    # a cron job, speed won't be a big issue
+    all_gses = GSE.objects.all()
+    context = get_gses_context(all_gses)
+    # None: cache forever until overwritten by cron.py fetch_report_data
+    cache.set('all_gses', context, None)
+    return context
+
+
+def update_cache_passed_gses():
+    passed_gses = GSE.objects.filter(passed=True)
+    context = get_gses_context(passed_gses)
+    cache.set('passed_gses', context, None)
+    return context
+
+
+def update_cache_not_passed_gses():
+    not_passed_gses = GSE.objects.filter(passed=False)
+    context = get_gses_context(not_passed_gses)
+    cache.set('not_passed_gses', context, None)
+    return context

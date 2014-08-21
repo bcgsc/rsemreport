@@ -5,73 +5,35 @@ from django.shortcuts import render
 from django.core.cache import cache
 
 from rsem_report.models import GSE
+from rsem_report import cron
 
-def get_gses_context(gses):
-    """update and sort gses, and calculate total stats"""
-
-    # total passed, running, queued, failed, none GSMs
-    tp, tr, tq, tf, tn = [0] * 5
-    for gse in gses:
-        gse.passed_gsms = gse.gsm_set.filter(status='passed').order_by('name')
-        gse.running_gsms = gse.gsm_set.filter(status='running').order_by('name')
-        gse.queued_gsms = gse.gsm_set.filter(status='queued').order_by('name')
-        gse.failed_gsms = gse.gsm_set.filter(status='failed').order_by('name')
-        gse.none_gsms = gse.gsm_set.filter(status='none').order_by('name')
-
-        gse.num_passed_gsms = gse.passed_gsms.count()
-        tp += gse.num_passed_gsms
-        gse.num_running_gsms = gse.running_gsms.count()
-        tr += gse.num_running_gsms
-        gse.num_queued_gsms = gse.queued_gsms.count()
-        tq += gse.num_queued_gsms
-        gse.num_failed_gsms = gse.failed_gsms.count()
-        tf += gse.num_failed_gsms
-        gse.num_none_gsms = gse.none_gsms.count()
-        tn += gse.num_none_gsms
-
-        gse.last_updated_gsm = max(gse.gsm_set.all(), key=lambda x: x.updated)
-
-    context = dict(gses=sorted(gses, key=lambda x: x.name),
-                   total_passed=tp,
-                   total_running=tr,
-                   total_queued=tq,
-                   total_failed=tf,
-                   total_none=tn)
-    context.update(get_username_host_context())
-    return context
-
-def get_username_host_context():
-    config_file = os.path.join(os.path.dirname(__file__), 'cron_config.yaml')
-    with open(config_file) as inf:
-        config = yaml.load(inf.read())
-        C= config['fetch_report_data']
-        return dict(username=C['username'], host=C['host'])
 
 def home(request):
     context = cache.get('all_gses')
     if not context:
-        gses = GSE.objects.all()
-        context = get_gses_context(gses)
-        # None: cache forever until overwritten by cron.py fetch_report_data
-        cache.set('all_gses', context, None)
+        context = cron.update_cache_all_gses()
     return render(request, 'rsem_report/progress_report.html', context)
 
 
 def passed_GSMs(request):
-    gses = GSE.objects.filter(passed=True)
-    context = get_gses_context(gses)
+    context = cache.get('passed_gses')
+    if not context:
+        context = cron.update_cache_passed_gses()
     return render(request, 'rsem_report/progress_report.html', context)
 
 
 def not_passed_GSMs(request):
-    gses = GSE.objects.filter(passed=False)
-    context = get_gses_context(gses)
+    context = cache.get('not_passed_gses')
+    if not context:
+        context = cron.update_cache_not_passed_gses()
     return render(request, 'rsem_report/progress_report.html', context)
 
 
 def stats(request):
-    gses = GSE.objects.all()
-    context = get_gses_context(gses)
+    context = cache.get('all_gses')
+    if not context:
+        context = cron.update_cache_all_gses()
+    gses = context['gses']
     for gse in gses:
         a, b, c, d, e = (gse.num_passed_gsms, gse.num_running_gsms,
                          gse.num_queued_gsms, gse.num_failed_gsms,
