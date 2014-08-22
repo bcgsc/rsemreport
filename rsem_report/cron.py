@@ -5,11 +5,7 @@ import kronos
 import paramiko
 import yaml
 import logging
-logging.basicConfig(
-    filename=os.path.join(os.path.dirname(__file__), 'cron_rsem_report.log'),
-    format='%(asctime)s %(message)s',
-    datefmt='%m/%d/%Y %I:%M:%S %p',
-    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 from django.core.cache import cache
 
@@ -44,14 +40,15 @@ def sshexec(host, username, cmd, private_key_file='~/.ssh/id_rsa'):
 def fetch_report_data():
     C = config['fetch_report_data']
     res = sshexec(C['host'], C['username'], C['cmd'])
-    logging.info(res)
+    # logger.info(res)            # too verbose, a huge json string
     if not res:
-        logging.info(
+        logger.info(
             'not output returned from {0}@{1}, {2}, possible communication '
             'error with remote host'.format(C['username'], C['host'], C['cmd']))
         return
     data = json.loads(res[0])
     
+    changed = False             # to flag if anything has changed
     gsm_objs = []
     for path in data:
         for gse in data[path]:
@@ -73,16 +70,19 @@ def fetch_report_data():
                         gsm_obj = GSM.objects.get(name=gsm)
                         if gsm_obj.status != status:
                             # need to do some update
-                            logging.info('Updating {0}: {1} => {2}'.format(
+                            logger.info('Updating {0}: {1} => {2}'.format(
                                 gsm, gsm_obj.status, status))
                             for key, value in kwargs.iteritems():
                                 setattr(gsm_obj, key, value)
                             gsm_obj.save()
+                            changed = True
                     except GSM.DoesNotExist:
-                        logging.info('Creating {0}'.format(gsm))
+                        logger.info('Creating {0}'.format(gsm))
                         gsm_obj = GSM(**kwargs)
                         gsm_objs.append(gsm_obj)
-    GSM.objects.bulk_create(gsm_objs)
+    if gsm_objs:
+        GSM.objects.bulk_create(gsm_objs)
+        changed = True
 
     # update GSEs based on passed
     gses = GSE.objects.all()
@@ -100,15 +100,22 @@ def fetch_report_data():
             if gse.passed == False:
                 gse.passed = True
                 gse.save()
+                changed = True
         else:
             # adapts to mannual changed, e.g. adding or removing GSMs after the
             # GSE is once passed
             if gse.passed == True:
                 gse.passed = False
                 gse.save()
-    update_cache_all_gses()
-    update_cache_passed_gses()
-    update_cache_not_passed_gses()
+                changed = True
+    if changed:
+        logger.info('updating memcaches...')
+        update_cache_all_gses()
+        update_cache_passed_gses()
+        update_cache_not_passed_gses()
+    else:
+        logger.info('nothing changed')
+
 
 def get_gses_context(gses):
     """update and sort gses, and calculate total stats"""
@@ -143,6 +150,7 @@ def get_gses_context(gses):
                    total_none=tn)
     context.update(get_username_host_context())
     return context
+
 
 def get_username_host_context():
     config_file = os.path.join(os.path.dirname(__file__), 'cron_config.yaml')
