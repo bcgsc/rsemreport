@@ -2,4 +2,4 @@
 *sqlite3
 *pyc
 *.yaml
-cron_rsem_report.log
+*.log
