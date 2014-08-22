@@ -54,6 +54,50 @@ ROOT_URLCONF = 'rsem_report.urls'
 
 WSGI_APPLICATION = 'rsem_report.wsgi.application'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s|%(asctime)s|%(name)s|%(module)s|%(process)d|%(processName)s|%(relativeCreated)d|%(thread)d|%(threadName)s|%(msecs)d ms|%(pathname)s+%(lineno)d|%(funcName)s:%(message)s'
+        },
+        'standard': {
+            'format': '%(levelname)s|%(asctime)s|%(name)s:%(message)s'
+            }
+    },
+    'handlers': {
+        'console':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard'
+        },
+        'file_rsem_report': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'rsem_report.log'),
+            'formatter': 'verbose'
+        },
+        'file_rsem_report_cron': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'rsem_report_cron.log'),
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console', 'file_rsem_report'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'rsem_report.cron': {
+            'handlers': ['console', 'file_rsem_report_cron'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    }
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -101,4 +145,3 @@ CACHES = {
         'KEY_PREFIX': BASE_DIR
     }
 }
-
