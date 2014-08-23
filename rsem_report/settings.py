@@ -75,13 +75,13 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': os.path.join(BASE_DIR, 'rsem_report.log'),
-            'formatter': 'verbose'
+            'formatter': 'standard'
         },
         'file_rsem_report_cron': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': os.path.join(BASE_DIR, 'rsem_report_cron.log'),
-            'formatter': 'verbose'
+            'formatter': 'standard'
         },
     },
     'loggers': {
