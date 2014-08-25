@@ -2,7 +2,11 @@ from django.contrib import admin
 from rsem_report.models import GSE, Species, GSM
 
 class GSEAdmin(admin.ModelAdmin):
-    list_display = ['name']
+    def get_num_gsms(self, obj):
+        return obj.gsm_set.count()
+    get_num_gsms.short_description = 'number of GSMs'
+    
+    list_display = ['name', 'get_num_gsms', 'created', 'updated']
     readonly_fields = ['created', 'updated']
     search_fields = ('name',)
 
