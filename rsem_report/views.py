@@ -2,12 +2,19 @@ from django.shortcuts import render
 from django.core.cache import cache
 
 from rsem_report import cron
+from rsem_report.models import GSE
 
+
+def get_num_for_header():
+    return dict(num_all_gses=GSE.objects.all().count(),
+                num_passed_gses=GSE.objects.filter(passed=True).count(),
+                num_not_passed_gses = GSE.objects.filter(passed=False).count())
 
 def home(request):
     context = cache.get('all_gses')
     if not context:
         context = cron.update_cache_all_gses()
+    context.update(get_num_for_header())
     return render(request, 'rsem_report/progress_report.html', context)
 
 
@@ -15,6 +22,7 @@ def passed_GSEs(request):
     context = cache.get('passed_gses')
     if not context:
         context = cron.update_cache_passed_gses()
+    context.update(get_num_for_header())
     return render(request, 'rsem_report/progress_report.html', context)
 
 
@@ -22,6 +30,7 @@ def not_passed_GSEs(request):
     context = cache.get('not_passed_gses')
     if not context:
         context = cron.update_cache_not_passed_gses()
+    context.update(get_num_for_header())
     return render(request, 'rsem_report/progress_report.html', context)
 
 
@@ -29,6 +38,7 @@ def stats(request):
     context = cache.get('all_gses')
     if not context:
         context = cron.update_cache_all_gses()
+    context.update(get_num_for_header())
     gses = context['gses']
     for gse in gses:
         a, b, c, d, e = (gse.num_passed_gsms, gse.num_running_gsms,

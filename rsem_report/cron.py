@@ -174,6 +174,7 @@ def update_cache_all_gses():
 def update_cache_passed_gses():
     passed_gses = GSE.objects.filter(passed=True)
     context = get_gses_context(passed_gses)
+    context.update(num_passed_gses=passed_gses.count())
     cache.set('passed_gses', context, None)
     return context
 
@@ -181,5 +182,6 @@ def update_cache_passed_gses():
 def update_cache_not_passed_gses():
     not_passed_gses = GSE.objects.filter(passed=False)
     context = get_gses_context(not_passed_gses)
+    context.update(num_not_passed_gses=not_passed_gses.count())
     cache.set('not_passed_gses', context, None)
     return context
