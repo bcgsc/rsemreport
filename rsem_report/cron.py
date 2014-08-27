@@ -70,8 +70,8 @@ def fetch_report_data():
                         gsm_obj = GSM.objects.get(name=gsm)
                         if gsm_obj.status != status:
                             # need to do some update
-                            logger.info('Updating {0}: {1} => {2}'.format(
-                                gsm, gsm_obj.status, status))
+                            logger.info('Updating {0} {1}: {2} => {3}'.format(
+                                gse, gsm, gsm_obj.status, status))
                             for key, value in kwargs.iteritems():
                                 setattr(gsm_obj, key, value)
                             gsm_obj.save()
