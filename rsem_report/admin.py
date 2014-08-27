@@ -26,7 +26,7 @@ class GSMAdmin(admin.ModelAdmin):
     get_species.short_description = 'Species'
     get_species.admin_order_field = 'species__name'
 
-    list_display = ('name', 'status', 'get_gse', 'get_species')
+    list_display = ('name', 'status', 'get_gse', 'get_species', 'created', 'updated')
     ordering = ('gse__name', 'name')
     search_fields = ('name',)
 
