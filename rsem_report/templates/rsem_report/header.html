@@ -9,9 +9,9 @@
 
     <div class="collapse navbar-collapse navHeaderCollapse">
       <ul class="nav navbar-nav navbar-right">
-        <li><a href='{% url 'home' %}'>All GSMs</a></li>
-        <li><a href='{% url 'passed_GSMs' %}'>Passed GSMs</a></li>
-        <li><a href='{% url 'not_passed_GSMs' %}'>Not passed GSMs</a></li>
+        <li><a href='{% url 'home' %}'>All GSEs ({{num_all_gses}})</a></li>
+        <li><a href='{% url 'passed_GSEs' %}'>Passed GSEs ({{num_passed_gses}})</a></li>
+        <li><a href='{% url 'not_passed_GSEs' %}'>Not passed GSEs ({{num_not_passed_gses}})</a></li>
         <li><a href='{% url 'stats' %}'>Stats</a></li>
       </ul>
     </div>

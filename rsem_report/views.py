@@ -11,14 +11,14 @@ def home(request):
     return render(request, 'rsem_report/progress_report.html', context)
 
 
-def passed_GSMs(request):
+def passed_GSEs(request):
     context = cache.get('passed_gses')
     if not context:
         context = cron.update_cache_passed_gses()
     return render(request, 'rsem_report/progress_report.html', context)
 
 
-def not_passed_GSMs(request):
+def not_passed_GSEs(request):
     context = cache.get('not_passed_gses')
     if not context:
         context = cron.update_cache_not_passed_gses()
