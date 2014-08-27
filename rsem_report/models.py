@@ -43,6 +43,10 @@ class GSM(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name='Created')
     updated = models.DateTimeField(auto_now=True, verbose_name='Updated')
 
+    def __str__(self):
+        return '{0} {1}'.format(self.gse.name, self.name)
+
+
     class Meta(object):
         verbose_name = 'GSM'
         verbose_name_plural = 'GSMs'
