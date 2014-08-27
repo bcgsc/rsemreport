@@ -40,13 +40,14 @@ def sshexec(host, username, cmd, private_key_file='~/.ssh/id_rsa'):
 def fetch_report_data():
     C = config['fetch_report_data']
     res = sshexec(C['host'], C['username'], C['cmd'])
-    logger.debug(res)
     if not res:
-        logger.info(
+        logger.error(res)
+        logger.error(
             'not output returned from {0}@{1}, {2}, possible communication '
             'error with remote host'.format(C['username'], C['host'], C['cmd']))
         return
     data = json.loads(res[0])
+    # logger.debug(data)          # too verbose
     
     changed = False             # to flag if anything has changed
     gsm_objs = []
