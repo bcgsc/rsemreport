@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 from django.core.cache import cache
 from django.shortcuts import render_to_response
+from django.utils import timezone
 
 from models import GSE, Species, GSM
 
@@ -154,11 +155,10 @@ def get_gses_context(gses):
                    total_queued=tq,
                    total_failed=tf,
                    total_none=tn)
-    context.update(get_username_host_context())
     return context
 
 
-def get_username_host_context():
+def get_context_username_host():
     config_file = os.path.join(os.path.dirname(__file__), 'cron_config.yaml')
     with open(config_file) as inf:
         config = yaml.load(inf.read())
@@ -166,18 +166,25 @@ def get_username_host_context():
         return dict(username=C['username'], host=C['host'])
 
 
-def get_num_for_header():
+def get_context_num_for_header():
     return dict(num_all_gses=GSE.objects.all().count(),
                 num_passed_gses=GSE.objects.filter(passed=True).count(),
                 num_not_passed_gses = GSE.objects.filter(passed=False).count())
 
 
+def update_context(context):
+    """add additional common context for each view"""
+    context.update(get_context_username_host())
+    context.update(get_context_num_for_header())
+    context.update(time_of_report_generation=timezone.now())
+
+
 def update_cache_all_gses():
     # better check if the concent of cached content is outdated, but since it's
     # a cron job, speed won't be a big issue
-    context = get_num_for_header()
     all_gses = GSE.objects.all()
-    context.update(get_gses_context(all_gses))
+    context = get_gses_context(all_gses)
+    update_context(context)
     resp = render_to_response('rsem_report/progress_report.html', context)
     # None: cache forever until overwritten by cron.py fetch_report_data
     cache.set('all_gses_response', resp, None)
@@ -185,27 +192,26 @@ def update_cache_all_gses():
 
 
 def update_cache_passed_gses():
-    context = get_num_for_header()
     passed_gses = GSE.objects.filter(passed=True)
-    context.update(get_gses_context(passed_gses))
+    context = get_gses_context(passed_gses)
+    update_context(context)
     resp = render_to_response('rsem_report/progress_report.html', context)
     cache.set('passed_gses_response', resp, None)
     return resp
 
 
 def update_cache_not_passed_gses():
-    context = get_num_for_header()
     not_passed_gses = GSE.objects.filter(passed=False)
-    context.update(get_gses_context(not_passed_gses))
+    context = get_gses_context(not_passed_gses)
+    update_context(context)
     resp = render_to_response('rsem_report/progress_report.html', context)
     cache.set('not_passed_gses_response', resp, None)
     return resp
 
 
 def update_cache_stats():
-    context = get_num_for_header()    
     all_gses = GSE.objects.all()
-    context.update(get_gses_context(all_gses))
+    context = get_gses_context(all_gses)
     gses = context['gses']
     for gse in gses:
         a, b, c, d, e = (gse.num_passed_gsms, gse.num_running_gsms,
@@ -214,6 +220,7 @@ def update_cache_stats():
         gse.num_all_gsms = sum([a, b, c, d, e])
         gse.passed_gsms_percentage = float(a) / gse.num_all_gsms * 100
     gses = sorted(gses, key=lambda x: (x.passed_gsms_percentage, x.name))
+    update_context(context)
     resp = render_to_response('rsem_report/stats.html', context)
     cache.set('stats_response', resp, None)
     return resp
