@@ -51,15 +51,15 @@ def fetch_report_data():
     
     changed = False             # to flag if anything has changed
     gsm_objs = []
-    for path in data:
-        for gse in data[path]:
+    for path in sorted(data.keys()):
+        for gse in sorted(data[path].keys()):
             # _: ignore the value created variable
             gse_obj, _ = GSE.objects.get_or_create(name=gse)
-            for species in data[path][gse]:
+            for species in sorted(data[path][gse].keys()):
                 # homo_sapiens => Homo sapiens
                 species_name = species.replace('_', ' ').capitalize()
                 species_obj, _ = Species.objects.get_or_create(name=species_name)
-                for gsm in data[path][gse][species]:
+                for gsm in sorted(data[path][gse][species].keys()):
                     status = data[path][gse][species][gsm]['status']
                     kwargs = dict(
                         name=gsm,
