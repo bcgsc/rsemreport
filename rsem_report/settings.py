@@ -95,6 +95,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'rsem_report.utils': {
+            'handlers': ['console', 'file_rsem_report'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     }
 }
 
