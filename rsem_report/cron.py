@@ -40,7 +40,7 @@ def sshexec(host, username, cmd, private_key_file='~/.ssh/id_rsa'):
 def fetch_report_data():
     C = config['fetch_report_data']
     res = sshexec(C['host'], C['username'], C['cmd'])
-    # logger.info(res)            # too verbose, a huge json string
+    logger.debug(res)
     if not res:
         logger.info(
             'not output returned from {0}@{1}, {2}, possible communication '
