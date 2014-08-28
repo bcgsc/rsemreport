@@ -41,6 +41,7 @@ def sshexec(host, username, cmd, private_key_file='~/.ssh/id_rsa'):
 @kronos.register(config['fetch_report_data']['freq'])
 def fetch_report_data():
     C = config['fetch_report_data']
+    logger.info('start fetching report data')
     res = sshexec(C['host'], C['username'], C['cmd'])
     if not res:
         logger.error(res)
