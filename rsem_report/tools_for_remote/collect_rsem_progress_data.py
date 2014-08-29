@@ -49,10 +49,14 @@ def analyze_genesis_queue(xml_data):
     # xpath: finding job_list recursively
     for job in xml_data.findall('.//job_list'):
         job_name = job.find('JB_name').text.strip()
-        gsm_search = re.search('GSM\d+', job_name)
-        if not gsm_search:
+        gse_gsm_search = re.search(
+            '(?P<GSM>GSM\d+)\_(?P<GSE>GSE\d+)', job_name)
+        if not gse_gsm_search:
             continue
-        gsm = gsm_search.group()
+        # the reason gse information should be there as well is because some
+        # GSMs belong to two GSEs and their job status could be different
+        gsm = '{0}-{1}'.format(
+            gse_gsm_search.group('GSE'), gse_gsm_search.group('GSM'))
         state = job.get('state')
         if state == 'running':
             running_gsms.append(gsm)
@@ -67,10 +71,12 @@ def analyze_nestor_queue(xml_data):
     for queue in queues:
         for job in queue.findall('job'):
             job_name = job.get('JobName')
-            gsm_search = re.search('GSM\d+', job_name)
-            if not gsm_search:
+            gse_gsm_search = re.search(
+                '(?P<GSM>GSM\d+)\_(?P<GSE>GSE\d+)', job_name)
+            if not gse_gsm_search:
                 continue
-            gsm = gsm_search.group()
+            gsm = '{0}-{1}'.format(
+                gse_gsm_search.group('GSE'), gse_gsm_search.group('GSM'))
             state = job.get('State')
             if state == 'Running':
                 running_gsms.append(gsm)                
@@ -109,9 +115,13 @@ def collect_report_data_per_dir(
             dd = res[rsem_output_dir][gse][species]
 
             dd[gsm] = {}
-            if gsm in queued_gsms:
+            # for the format of gsm_query, please refer to how queued_gsms or
+            # running_gsms are constructed in analyze_<clustername>_queue
+            # functions
+            gsm_query = '{0}-{1}'.format(gse, gsm)
+            if gsm_query in queued_gsms:
                 dd[gsm].update(status='queued')
-            elif gsm in running_gsms:
+            elif gsm_query in running_gsms:
                 dd[gsm].update(status='running')
             elif options.flag_file in files:
                 # e.g. rsem.COMPLIETE exists, meaning passed
