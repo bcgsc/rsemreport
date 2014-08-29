@@ -71,17 +71,18 @@ def fetch_report_data():
                         path=os.path.join(path, gse, species, gsm),
                         status=status)
                     try:
-                        gsm_obj = GSM.objects.get(name=gsm)
+                        gsm_obj = GSM.objects.get(gse=gse_obj, name=gsm)
                         if gsm_obj.status != status:
                             # need to do some update
-                            logger.info('Updating {0} {1}: {2} => {3}'.format(
-                                gse, gsm, gsm_obj.status, status))
+                            logger.info(
+                                'Updating {0}-{1}: {2} => {3}'.format(
+                                    gse, gsm, gsm_obj.status, status))
                             for key, value in kwargs.iteritems():
                                 setattr(gsm_obj, key, value)
                             gsm_obj.save()
                             changed = True
                     except GSM.DoesNotExist:
-                        logger.info('Creating {0}'.format(gsm))
+                        logger.info('Creating {0}-{1}'.format(gse, gsm))
                         gsm_obj = GSM(**kwargs)
                         gsm_objs.append(gsm_obj)
     if gsm_objs:
