@@ -1,6 +1,8 @@
+import os
 import logging
 logger = logging.getLogger(__name__)
 import time
+from datetime import datetime
 from functools import update_wrapper
 
 def decorator(d):
@@ -37,3 +39,11 @@ def timeit(f):
         logger.info("time spent on {0}: {1:.5f}s".format(f.func_name, et - bt))
         return r
     return new_f
+
+
+def touch(fname, times=None):
+    with open(fname, 'a') as opf:
+        # write date and path to make it more informative
+        opf.write('created: {0}'.format(unicode(datetime.now())))
+        opf.write('path: {0}'.format(os.path.abspath('.')))
+        os.utime(fname, times)
