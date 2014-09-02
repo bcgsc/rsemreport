@@ -87,7 +87,8 @@
       
       <td class="vert-align">
 	{{gse.last_updated_gsm.updated|date:"SHORT_DATETIME_FORMAT"}}
-	({{gse.last_updated_gsm.updated|naturaltime}})
+	{# because the page is cached, the natural time doesn't work anymore #}
+	{# ({{gse.last_updated_gsm.updated|naturaltime}}) #}
       </td>
 
     </tr>
