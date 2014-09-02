@@ -45,16 +45,16 @@ def sshexec(host, username, cmd, private_key_file='~/.ssh/id_rsa'):
 
 def get_lockers():
     # e.g. transfer script: transfer.14-08-18_12-17-55.sh.locker
-    lockers = glob.glob(
-        os.path.expanduser('~/.rsem_report.fetch_report_data.*.locker'))
+    lockers = glob.glob(os.path.join(
+        os.path.dirname(__file__), '.rsem_report.fetch_report_data.*.locker'))
     return lockers
 
 
 def create_locker(locker_prefix='.rsem_report.fetch_report_data'):
     now = datetime.now()
     now_str = now.strftime('%y-%m-%d_%H-%M-%S')
-    locker = os.path.expanduser(
-        '~/{0}.{1}.locker'.format(locker_prefix, now_str))
+    locker = os.path.join(os.path.dirname(__file__),
+                          '{0}.{1}.locker'.format(locker_prefix, now_str))
     logger.info('creating {0}'.format(locker))
     touch(locker)
     return locker
