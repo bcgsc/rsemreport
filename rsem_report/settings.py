@@ -134,8 +134,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
-TEMPLATE_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEMPLATE_DIRS = (os.path.join(TEMPLATE_ROOT, 'templates'),)
+TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader'
