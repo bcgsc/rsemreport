@@ -1,20 +1,18 @@
 import os 
 import json
-import glob
 
 import kronos
 import paramiko
 import yaml
 import logging
 logger = logging.getLogger(__name__)
-from datetime import datetime
 
 from django.core.cache import cache
 from django.shortcuts import render_to_response
 from django.utils import timezone
 
 from models import GSE, Species, GSM
-from utils import touch
+from utils import lockit
 
 
 with open(os.path.join(os.path.dirname(__file__), 'cron_config.yaml')) as inf:
@@ -43,38 +41,9 @@ def sshexec(host, username, cmd, private_key_file='~/.ssh/id_rsa'):
         return output
 
 
-def get_lockers():
-    # e.g. transfer script: transfer.14-08-18_12-17-55.sh.locker
-    lockers = glob.glob(os.path.join(
-        os.path.dirname(__file__), '.rsem_report.fetch_report_data.*.locker'))
-    return lockers
-
-
-def create_locker(locker_prefix='.rsem_report.fetch_report_data'):
-    now = datetime.now()
-    now_str = now.strftime('%y-%m-%d_%H-%M-%S')
-    locker = os.path.join(os.path.dirname(__file__),
-                          '{0}.{1}.locker'.format(locker_prefix, now_str))
-    logger.info('creating {0}'.format(locker))
-    touch(locker)
-    return locker
-
-
-def remove_locker(locker):
-    logger.info('removing {0}'.format(locker))
-    os.remove(locker)
-
-
 @kronos.register(config['fetch_report_data']['freq'])
+@lockit(os.path.join(os.path.dirname(__file__), '.rsem_report.fetch_report_data'))
 def fetch_report_data():
-    lockers = get_lockers()
-    if len(lockers) >= 1:
-        logger.info(
-            'The previous fetch hasn\'t completed yet ({0}), stop current '
-            'session of fetch_report_data'.format(' '.join(lockers)))
-        return
-
-    locker = create_locker()
     C = config['fetch_report_data']
     logger.info('start fetching report data')
     res = sshexec(C['host'], C['username'], C['cmd'])
@@ -83,7 +52,6 @@ def fetch_report_data():
         logger.error(
             'not output returned from {0}@{1}, {2}, possible communication '
             'error with remote host'.format(C['username'], C['host'], C['cmd']))
-        remove_locker(locker)
         return
     data = json.loads(res[0])
     # logger.debug(data)          # too verbose
@@ -161,7 +129,6 @@ def fetch_report_data():
     else:
         logger.info('nothing changed')
 
-    remove_locker(locker)
 
 def get_gses_context(gses):
     """update and sort gses, and calculate total stats"""
