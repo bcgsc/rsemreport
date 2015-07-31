@@ -12,6 +12,8 @@ rsem_pipeline")
 	. venv/bin/activate
 	pip install -r requirements.txt
 
+	# create database
+	python manage.py syncdb
 	
 # Configure the app
 
