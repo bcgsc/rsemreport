@@ -1,32 +1,21 @@
-"""
-Django settings for rsem_report project.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.6/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.6/ref/settings/
-"""
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
+# https://docs.djangoproject.com/en/1.7/ref/settings/#secret-key
 SECRET_KEY = 'es^j#4!@l$55us=^04sop)!+vczm%1(20jtu$9b(y&*9+(q_t^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# https://docs.djangoproject.com/en/1.7/ref/settings/#debug
 DEBUG = True
-ALLOWED_HOSTS = ['zxue01-centos', 'zxue01-centos.phage.bcgsc.ca']
 
+# https://docs.djangoproject.com/en/1.8/ref/settings/#template-debug
 TEMPLATE_DEBUG = True
 
-# Application definition
-
+# https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-INSTALLED_APPS
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +30,7 @@ INSTALLED_APPS = (
     'kronos',
 )
 
+# https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-MIDDLEWARE_CLASSES
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -50,10 +40,13 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+# https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-ROOT_URLCONF
 ROOT_URLCONF = 'rsem_report.urls'
 
+# https://docs.djangoproject.com/en/1.7/ref/settings/#wsgi-application
 WSGI_APPLICATION = 'rsem_report.wsgi.application'
 
+# https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-LOGGING
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -104,9 +97,7 @@ LOGGING = {
 }
 
 
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-
+# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -116,31 +107,37 @@ DATABASES = {
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
-
+# https://docs.djangoproject.com/en/1.7/ref/settings/#language-code
 LANGUAGE_CODE = 'en-us'
 
+# https://docs.djangoproject.com/en/1.7/ref/settings/#time-zone
 TIME_ZONE = 'America/Vancouver'
 
+# https://docs.djangoproject.com/en/1.7/ref/settings/#use-i18n
 USE_I18N = True
 
+# https://docs.djangoproject.com/en/1.7/ref/settings/#use-l10n
 USE_L10N = True
 
+# https://docs.djangoproject.com/en/1.7/ref/settings/#use-tz
 USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
 
+# https://docs.djangoproject.com/en/1.7/ref/settings/#static-url
 STATIC_URL = '/static/'
 
-
+# https://docs.djangoproject.com/en/1.7/ref/settings/#template-dirs
 TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)
+
+# https://docs.djangoproject.com/en/1.7/ref/settings/#template-loaders
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader'
     )
 
-
+# https://docs.djangoproject.com/en/1.7/ref/settings/#caches
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',

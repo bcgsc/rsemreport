@@ -4,3 +4,4 @@
 *.yaml
 *.log
 .rsem_report.fetch_report_data*locker
+venv*
