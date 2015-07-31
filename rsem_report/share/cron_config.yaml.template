@@ -1,0 +1,5 @@
+fetch_report_data:
+  freq: "*/10 * * * *"
+  host: <domain of the HPC system e.g. "nestor.westgrid.ca">
+  username: <"username">
+  cmd: "/absolute/path/to/bin/python /absolute/path/to/collect_rsem_progress_data.py -d /absolute/path/to/batchx/rsem_output --host nestor --qstat-cmd 'showq -u username --format=xml'"

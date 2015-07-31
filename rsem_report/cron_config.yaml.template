@@ -1,5 +1,0 @@
-fetch_report_data:
-  freq: "*/10 * * * *"
-  host: "nestor.westgrid.ca"
-  username: "zyxue"
-  cmd: "/home/zyxue/zx_local/bin/python /home/zyxue/collect_rsem_progress_data.py -d /global/scratch/zyxue/rsem_analysis/batch8/121/rsem_output --host genesis --qstat-cmd 'showq -u zyxue --format=xml'"
