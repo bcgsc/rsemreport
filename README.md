@@ -5,7 +5,7 @@ rsem_pipeline")
 
 # Install
     
-    git clone git@github.com:bcgsc/rsemreport.git``
+    git clone git@github.com:bcgsc/rsemreport.git
 		    
 # Configure the app
 			
@@ -19,3 +19,7 @@ or if you have installed [`foreman`](https://github.com/ddollar/foreman "url to
 foreman") already,
 							
     foreman start
+
+# Screenshot
+
+![screenshot](https://github.com/bcgsc/rsemreport/blob/master/rsemreport_screen_shot.jpg "screenshot")
