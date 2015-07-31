@@ -1,4 +1,4 @@
-{% extends "rsem_report/base.html" %}
+{% extends "rsemreport/base.html" %}
 
 {% load static from staticfiles %}
 {% load humanize %}
@@ -51,21 +51,21 @@
       <td>
 	{% if gse.num_none_gsms != 0 %}<div>{{gse.num_none_gsms}}</div>{%endif%}
 	{% for gsm in gse.none_gsms %}
-	  {% include "rsem_report/GSM.html" %}
+	  {% include "rsemreport/GSM.html" %}
 	{% endfor %}
       </td>
 
       <td>
 	{% if gse.num_queued_gsms != 0 %}<div>{{gse.num_queued_gsms}}</div>{%endif%}
 	{% for gsm in gse.queued_gsms %}
-	  {% include "rsem_report/GSM.html" %}
+	  {% include "rsemreport/GSM.html" %}
 	{% endfor %}
       </td>
 
       <td>
 	{% if gse.num_running_gsms != 0 %}<div>{{gse.num_running_gsms}}</div>{%endif%}
 	{% for gsm in gse.running_gsms %}
-	  {% include "rsem_report/GSM.html" %}
+	  {% include "rsemreport/GSM.html" %}
 	{% endfor %}
       </td>
 
@@ -73,14 +73,14 @@
 	{# onclick="return false;" to avoid the page from being scrolled to the top #}
 	{% if gse.num_passed_gsms != 0 %}<div>{{gse.num_passed_gsms}}</div>{%endif%}
 	{% for gsm in gse.passed_gsms %}
-	  {% include "rsem_report/GSM.html" %}
+	  {% include "rsemreport/GSM.html" %}
 	{% endfor %}
       </td>
 
       <td>
 	{% if gse.num_failed_gsms != 0 %}<div>{{gse.num_failed_gsms}}</div>{%endif%}
 	{% for gsm in gse.failed_gsms %}
-	  {% include "rsem_report/GSM.html" %}
+	  {% include "rsemreport/GSM.html" %}
 	{% endfor %}
       </td>
 
@@ -104,7 +104,7 @@
 
 {# put <script> at the end to avoid blocking loading the page #}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src='{% static 'rsem_report/ZeroClipboard/ZeroClipboard.min.js' %}'></script>
+<script src='{% static 'rsemreport/ZeroClipboard/ZeroClipboard.min.js' %}'></script>
 <script type="text/javascript">
 var client = new ZeroClipboard($('a.gsm'));
 client.on( "ready", function( readyEvent ) {

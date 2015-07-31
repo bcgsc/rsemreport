@@ -42,7 +42,7 @@ def sshexec(host, username, cmd, private_key_file='~/.ssh/id_rsa'):
 
 
 @kronos.register(config['fetch_report_data']['freq'])
-@lockit(os.path.join(os.path.dirname(__file__), '.rsem_report.fetch_report_data'))
+@lockit(os.path.join(os.path.dirname(__file__), '.rsemreport.fetch_report_data'))
 def fetch_report_data():
     C = config['fetch_report_data']
     logger.info('start fetching report data')
@@ -191,7 +191,7 @@ def update_cache_all_gses():
     all_gses = GSE.objects.all()
     context = get_gses_context(all_gses)
     update_context(context)
-    resp = render_to_response('rsem_report/progress_report.html', context)
+    resp = render_to_response('rsemreport/progress_report.html', context)
     # None: cache forever until overwritten by cron.py fetch_report_data
     cache.set('all_gses_response', resp, None)
     return resp
@@ -201,7 +201,7 @@ def update_cache_passed_gses():
     passed_gses = GSE.objects.filter(passed=True)
     context = get_gses_context(passed_gses)
     update_context(context)
-    resp = render_to_response('rsem_report/progress_report.html', context)
+    resp = render_to_response('rsemreport/progress_report.html', context)
     cache.set('passed_gses_response', resp, None)
     return resp
 
@@ -210,7 +210,7 @@ def update_cache_not_passed_gses():
     not_passed_gses = GSE.objects.filter(passed=False)
     context = get_gses_context(not_passed_gses)
     update_context(context)
-    resp = render_to_response('rsem_report/progress_report.html', context)
+    resp = render_to_response('rsemreport/progress_report.html', context)
     cache.set('not_passed_gses_response', resp, None)
     return resp
 
@@ -227,6 +227,6 @@ def update_cache_stats():
         gse.passed_gsms_percentage = float(a) / gse.num_all_gsms * 100
     gses = sorted(gses, key=lambda x: (x.passed_gsms_percentage, x.name))
     update_context(context)
-    resp = render_to_response('rsem_report/stats.html', context)
+    resp = render_to_response('rsemreport/stats.html', context)
     cache.set('stats_response', resp, None)
     return resp

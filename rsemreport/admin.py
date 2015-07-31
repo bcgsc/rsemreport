@@ -1,5 +1,5 @@
 from django.contrib import admin
-from rsem_report.models import GSE, Species, GSM
+from rsemreport.models import GSE, Species, GSM
 
 class GSEAdmin(admin.ModelAdmin):
     def get_num_gsms(self, obj):

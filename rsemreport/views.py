@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.core.cache import cache
 
-from rsem_report import cron
-from rsem_report.models import GSE
+from rsemreport import cron
+from rsemreport.models import GSE
 
 from utils import timeit
 

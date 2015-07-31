@@ -29,7 +29,7 @@ INSTALLED_APPS = (
 
     'django.contrib.humanize',
 
-    'rsem_report',
+    'rsemreport',
     'kronos',
 )
 
@@ -44,10 +44,10 @@ MIDDLEWARE_CLASSES = (
 )
 
 # https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-ROOT_URLCONF
-ROOT_URLCONF = 'rsem_report.urls'
+ROOT_URLCONF = 'rsemreport.urls'
 
 # https://docs.djangoproject.com/en/1.7/ref/settings/#wsgi-application
-WSGI_APPLICATION = 'rsem_report.wsgi.application'
+WSGI_APPLICATION = 'rsemreport.wsgi.application'
 
 # https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-LOGGING
 LOGGING = {
@@ -67,32 +67,32 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'standard'
         },
-        'file_rsem_report': {
+        'file_rsemreport': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(LOG_DIR, 'rsem_report.log'),
+            'filename': os.path.join(LOG_DIR, 'rsemreport.log'),
             'formatter': 'standard'
         },
-        'file_rsem_report_cron': {
+        'file_rsemreport_cron': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(LOG_DIR, 'rsem_report_cron.log'),
+            'filename': os.path.join(LOG_DIR, 'rsemreport_cron.log'),
             'formatter': 'standard'
         },
     },
     'loggers': {
         'django.request': {
-            'handlers': ['console', 'file_rsem_report'],
+            'handlers': ['console', 'file_rsemreport'],
             'level': 'DEBUG',
             'propagate': True,
         },
-        'rsem_report.cron': {
-            'handlers': ['console', 'file_rsem_report_cron'],
+        'rsemreport.cron': {
+            'handlers': ['console', 'file_rsemreport_cron'],
             'level': 'DEBUG',
             'propagate': True,
         },
-        'rsem_report.utils': {
-            'handlers': ['console', 'file_rsem_report'],
+        'rsemreport.utils': {
+            'handlers': ['console', 'file_rsemreport'],
             'level': 'DEBUG',
             'propagate': True,
         },
@@ -104,7 +104,7 @@ LOGGING = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'rsem_report.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'rsemreport.sqlite3'),
     }
 }
 
