@@ -1,5 +1,18 @@
+# python manage.py installtasks will read this configuration and install a cron
+# job
+
 fetch_report_data:
+  # cron job frequency
   freq: "*/10 * * * *"
+
+  # this is the hostname of the remote HPC you're using to run rsempipelin
   host: <domain of the HPC system e.g. "nestor.westgrid.ca">
+
+  # this is the username you used to login to the host
   username: <"username">
-  cmd: "/absolute/path/to/bin/python /absolute/path/to/collect_rsem_progress_data.py -d /absolute/path/to/batchx/rsem_output --host nestor --qstat-cmd 'showq -u username --format=xml'"
+
+  # this is the command you'd like to be executed on the REMOTE
+  # host/HPC. collect_rsem_progress_data.py will collect the progress data from
+  # qstat/showq command, and send it back to localhost, then django takes care
+  # of the data and put it into the database
+  cmd: "/absolute/path/to/remotehost/bin/python /absolute/path/to/remotehost/collect_rsem_progress_data.py -d /absolute/path/to/remotehost/batchx/rsem_output --host nestor --qstat-cmd 'showq -u username --format=xml'"
