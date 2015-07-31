@@ -3,6 +3,9 @@ import os
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+LOG_DIR = os.path.join(BASE_DIR, 'log')
+if not os.path.exists(LOG_DIR):
+    os.mkdir(LOG_DIR)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # https://docs.djangoproject.com/en/1.7/ref/settings/#secret-key
@@ -67,13 +70,13 @@ LOGGING = {
         'file_rsem_report': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'rsem_report.log'),
+            'filename': os.path.join(LOG_DIR, 'rsem_report.log'),
             'formatter': 'standard'
         },
         'file_rsem_report_cron': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'rsem_report_cron.log'),
+            'filename': os.path.join(LOG_DIR, 'rsem_report_cron.log'),
             'formatter': 'standard'
         },
     },
